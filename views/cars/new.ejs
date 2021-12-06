@@ -1,0 +1,51 @@
+<% layout ('partials/boilerplate.ejs') %>
+
+    <div class="mb-3 row d-flex justify-content-center">
+        <div class="col-6 col-lg-3">
+            <img id='car-add-img'
+                src="https://res.cloudinary.com/duh1ufu4r/image/upload/c_scale,w_180/v1638811403/car4let/carAdd_mndi02.png"
+                alt="">
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6">
+            <form action='/car/new' method='POST' novalidate class='needs-validation'>
+                <div class="mb-3">
+                    <label for="carMake" class="form-label">Car make</label>
+                    <select id='carMake' class="form-select" name='carMake' required
+                        aria-label="Default select example required">
+                        <option value='' disabled selected>Choose car make</option>
+                        <% for(let make of makes) { %>
+                            <option value="<%=make%>">
+                                <%=make%>
+                            </option>
+                            <% } %>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="carModel" class="form-label">Model</label>
+                    <input autocomplete="off" required type="input" name='carModel' class="form-control" id="carModel">
+                </div>
+                <div class="mb-3">
+                    <label for="carYear" class="form-label">Production year</label>
+                    <input required type="text" onkeypress="return isNumber(event)" name='carYear' class="form-control"
+                        id="carYear">
+                </div>
+                <div class="mb-3">
+                    <label for="carPrice" class="form-label">Price (per day)</label>
+                    <input required type="text" onkeypress="return isNumber(event)" name='carPrice' class="form-control"
+                        id="carPrice">
+                </div>
+                <div class="mb-3">
+                    <label for="carDescription" class="form-label">Description</label>
+                    <textarea class='form-control' name="carDescription" id="carDescription" cols="30" rows="5"
+                        required></textarea>
+                </div>
+                <div class="row d-flex justify-content-center">
+                    <div class="col-3">
+                        <button type="submit" class="mb-3 btn">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>

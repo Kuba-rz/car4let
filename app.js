@@ -31,6 +31,7 @@ app.use(methodOverride('_method'))
 app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use('/img', express.static(__dirname + '/images'));
 
 
 app.listen(3000, () => {
@@ -40,4 +41,15 @@ app.listen(3000, () => {
 app.get('/', (req, res) => {
     res.locals.title = 'Home'
     res.render('cars/homepage')
+})
+
+app.get('/car/new', (req, res) => {
+    const makes = require('./helpers/carMakes')
+    res.locals.title = 'Add a new car'
+    res.render('cars/new', { makes })
+})
+
+app.post('/car/new', (req, res) => {
+    console.log(req.body)
+    res.redirect('/car/new')
 })

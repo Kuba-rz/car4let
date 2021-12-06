@@ -5,12 +5,33 @@
 
 .navbar {
     background-color:#22223b;
+    position: relative;
 }
 
 .white {
     color: white;
 }
 
-#body-div {
-    margin-top: 80px;
+button[type='submit'], button[type='submit']:hover {
+    background-color:#f3722c;
+    color: white;
+}
+
+button[type='submit']:hover {
+    background-color:#f94144;
+    color: white;
+}
+
+.nav-link, .nav-item {
+    transition: 0.1s;
+}
+
+.nav-link:hover, .nav-item:hover {
+    text-decoration: underline white;
+    transform: translateY(-0.7px)
+}
+
+#car-add-img {
+    position: relative;
+    left:20px;
 }
