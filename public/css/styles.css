@@ -1,0 +1,16 @@
+#nav-logo {
+    width: 8rem;
+    height: auto;
+}
+
+.navbar {
+    background-color:#22223b;
+}
+
+.white {
+    color: white;
+}
+
+#body-div {
+    margin-top: 80px;
+}

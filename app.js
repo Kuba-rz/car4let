@@ -38,5 +38,6 @@ app.listen(3000, () => {
 })
 
 app.get('/', (req, res) => {
-    res.send('ok')
+    res.locals.title = 'Home'
+    res.render('cars/homepage')
 })
