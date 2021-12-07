@@ -1,8 +1,25 @@
+require('dotenv').config()
 const express = require('express')
 const ejsMate = require('ejs-mate')
 const methodOverride = require('method-override')
 const path = require('path')
 const mongoose = require('mongoose')
+
+const { storage } = require('./cloudinary/index')
+const multer = require('multer')
+const upload = multer({ storage: storage })
+
+const carModel = require('./models/carModel')
+
+
+
+
+
+
+
+
+
+
 
 //Database URL depending if we are in production
 const DBUrl = process.env.mongoAtlasURL || 'mongodb://localhost:27017/car4let'
@@ -19,6 +36,9 @@ async function connectMongo() {
 }
 
 connectMongo()
+
+
+
 
 const app = express()
 
@@ -49,7 +69,17 @@ app.get('/car/new', (req, res) => {
     res.render('cars/new', { makes })
 })
 
-app.post('/car/new', (req, res) => {
-    console.log(req.body)
+app.post('/car/new', upload.array('carImages'), async (req, res) => {
+    console.log(req.files)
+    const car = new carModel(req.body)
+    car.carImages = req.files.map(item => {
+        const container = {};
+        container.url = item.path;
+        container.filename = item.filename;
+        return container;
+    })
+    console.log(car.carImages)
+    console.log(car)
+    await car.save()
     res.redirect('/car/new')
 })

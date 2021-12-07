@@ -7,9 +7,11 @@
                 alt="">
         </div>
     </div>
-    <div class="row d-flex justify-content-center">
-        <div class="col-lg-6">
-            <form action='/car/new' method='POST' novalidate class='needs-validation'>
+
+
+    <form action='/car/new' method='POST' novalidate class='needs-validation' enctype='multipart/form-data'>
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-4">
                 <div class="mb-3">
                     <label for="carMake" class="form-label">Car make</label>
                     <select id='carMake' class="form-select" name='carMake' required
@@ -26,6 +28,8 @@
                     <label for="carModel" class="form-label">Model</label>
                     <input autocomplete="off" required type="input" name='carModel' class="form-control" id="carModel">
                 </div>
+            </div>
+            <div class="col-lg-4">
                 <div class="mb-3">
                     <label for="carYear" class="form-label">Production year</label>
                     <input required type="text" onkeypress="return isNumber(event)" name='carYear' class="form-control"
@@ -36,16 +40,26 @@
                     <input required type="text" onkeypress="return isNumber(event)" name='carPrice' class="form-control"
                         id="carPrice">
                 </div>
-                <div class="mb-3">
-                    <label for="carDescription" class="form-label">Description</label>
-                    <textarea class='form-control' name="carDescription" id="carDescription" cols="30" rows="5"
-                        required></textarea>
-                </div>
-                <div class="row d-flex justify-content-center">
-                    <div class="col-3">
-                        <button type="submit" class="mb-3 btn">Submit</button>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-8">
+                    <div class="mb-3">
+                        <label for="carDescription" class="form-label">Description</label>
+                        <textarea class='form-control' name="carDescription" id="carDescription" cols="30" rows="5"
+                            required></textarea>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-8">
+                    <div class='mb-3'>
+                        <label for="carPrice" class="form-label">Images:</label>
+                        <input required type="file" name='carImages' multiple class="form-control" id="carPrice">
+                    </div>
+                </div>
+
+                <div class="row d-flex justify-content-center">
+                    <button type="submit" class="mb-3 btn">Submit</button>
+                </div>
+            </div>
+    </form>
