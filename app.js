@@ -14,7 +14,7 @@ const carModel = require('./models/carModel')
 const expressError = require('./helpers/expressError')
 
 const carValidate = require('./helpers/carValidate')
-
+const { catchAsync } = require('./helpers/functions')
 
 
 
@@ -72,7 +72,13 @@ app.get('/car/new', (req, res) => {
     res.render('cars/new', { makes })
 })
 
-app.post('/car/new', upload.array('carImages'), carValidate, async (req, res) => {
+app.get('/car/view', catchAsync(async (req, res) => {
+    res.locals.title = 'All cars'
+    const cars = await carModel.find({})
+    res.render('cars/view', { cars })
+}))
+
+app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (req, res) => {
     console.log(req.files)
     const car = new carModel(req.body)
     car.carImages = req.files.map(item => {
@@ -85,7 +91,7 @@ app.post('/car/new', upload.array('carImages'), carValidate, async (req, res) =>
     console.log(car)
     await car.save()
     res.redirect('/car/new')
-})
+}))
 
 
 

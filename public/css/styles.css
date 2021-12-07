@@ -36,3 +36,15 @@ button[type='submit']:hover {
     position: relative;
     left:20px;
 }
+
+.btn-view-car {
+    background-color:#f3722c;
+    color: white;
+    position: relative;
+    top:10px;
+}
+
+.btn-view-car:hover {
+    background-color:#f94144;
+    color: white;
+}

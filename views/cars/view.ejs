@@ -1,0 +1,61 @@
+<% layout ('partials/boilerplate.ejs') %>
+
+    <h1 class="text-center display-3">All cars</h1>
+    <div class="mt-3 row d-flex justify-content-between">
+        <% for(let i=0; i<cars.length; i+=2) { %>
+            <div class="col-lg-6">
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
+                                class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">
+                                    <%=cars[i].carMake%>
+                                        <%=cars[i].carModel%>
+                                </h5>
+                                <ul class="mt-3 text-center list-group list-group-flush">
+                                    <li class="list-group-item">Year: <%=cars[i].carYear%>
+                                    </li>
+                                    <li class="list-group-item">Price: $<%=cars[i].carPrice%>
+                                    </li>
+                                    <li class="list-group-item"><a class='btn btn-view-car'>View</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% if(cars[i+1]){ %>
+                <div class="col-lg-6">
+                    <div class="card mb-3">
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
+                                    class="img-fluid rounded-start" alt="...">
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">
+                                        <%=cars[i+1].carMake%>
+                                            <%=cars[i+1].carModel%>
+                                    </h5>
+                                    <ul class="mt-3 text-center list-group list-group-flush">
+                                        <li class="list-group-item">Year: <%=cars[i+1].carYear%>
+                                        </li>
+                                        <li class="list-group-item">Price: $<%=cars[i+1].carPrice%>
+                                        </li>
+                                        <li class="list-group-item"><a class='btn btn-view-car'>View</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+                    <% } %>
+    </div>
