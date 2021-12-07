@@ -11,6 +11,9 @@ const upload = multer({ storage: storage })
 
 const carModel = require('./models/carModel')
 
+const expressError = require('./helpers/expressError')
+
+const carValidate = require('./helpers/carValidate')
 
 
 
@@ -69,7 +72,7 @@ app.get('/car/new', (req, res) => {
     res.render('cars/new', { makes })
 })
 
-app.post('/car/new', upload.array('carImages'), async (req, res) => {
+app.post('/car/new', upload.array('carImages'), carValidate, async (req, res) => {
     console.log(req.files)
     const car = new carModel(req.body)
     car.carImages = req.files.map(item => {
@@ -82,4 +85,21 @@ app.post('/car/new', upload.array('carImages'), async (req, res) => {
     console.log(car)
     await car.save()
     res.redirect('/car/new')
+})
+
+
+
+
+
+
+
+app.use((req, res, next) => {
+    throw new expressError('Cannot find the specified webpage!', 404)
+})
+
+app.use((err, req, res, next) => {
+    res.locals.title = 'Error'
+    const { message = 'Something went wrong!', status = 500 } = err
+    const stack = err.stack
+    res.status(status).render('error', { message, status, stack })
 })
