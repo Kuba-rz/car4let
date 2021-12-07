@@ -2,6 +2,7 @@ const joi = require('joi')
 const expressError = require('./expressError')
 
 function carValidate(req, res, next) {
+    //Schema to validate the car
     const schema = joi.object({
         carMake: joi.string().required().messages({
             'string.base': `"Make" should be a type of 'text'`,
@@ -42,6 +43,7 @@ function carValidate(req, res, next) {
     const images = req.files.map(f => ({ url: f.path, filename: f.filename }))
 
     const { error } = schema.validate({ carMake, carModel, carYear, carPrice, carDescription, carImages: images })
+    //If an error has been found, throw an error otherwise continue with saving
     if (error) {
         const msg = error.details.map(el => el.message).join(',')
         throw new expressError(msg, 400)

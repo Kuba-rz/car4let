@@ -50,6 +50,7 @@ app.set('view engine', 'ejs')
 
 app.engine('ejs', ejsMate)
 
+//Setting everything for use
 app.use(methodOverride('_method'))
 app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }))
@@ -78,9 +79,21 @@ app.get('/car/view', catchAsync(async (req, res) => {
     res.render('cars/view', { cars })
 }))
 
+app.get('/car/:id', catchAsync(async (req, res) => {
+    try {
+        //If id does not exist in the database, redirect the user with a flash message
+        const car = await carModel.findById(req.params.id)
+        res.redirect('/car/view')
+    }
+    catch {
+        throw new expressError('Cannot find the specified car', 404)
+    }
+}))
+
 app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (req, res) => {
     console.log(req.files)
     const car = new carModel(req.body)
+    //Loop over the uploaded images and create a new array of objects, containing the url and pathname to store in the DB
     car.carImages = req.files.map(item => {
         const container = {};
         container.url = item.path;
@@ -100,10 +113,12 @@ app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (r
 
 
 app.use((req, res, next) => {
+    //For any unfound webpages
     throw new expressError('Cannot find the specified webpage!', 404)
 })
 
 app.use((err, req, res, next) => {
+    //Error handler
     res.locals.title = 'Error'
     const { message = 'Something went wrong!', status = 500 } = err
     const stack = err.stack
