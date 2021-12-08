@@ -91,6 +91,34 @@ app.get('/car/:id', catchAsync(async (req, res) => {
     }
 }))
 
+app.get('/car/:id/edit', catchAsync(async (req, res) => {
+    const car = await carModel.findById(req.params.id)
+    const makes = require('./helpers/carMakes')
+    res.locals.title = `Edit`
+    res.render('cars/edit', { car, makes })
+}))
+
+app.put('/car/:id/edit', upload.array('carImages'), catchAsync(async (req, res) => {
+    const { carMake, carYear, carPrice, carDescription, deleteImages } = req.body
+    const model = req.body.carModel
+    const car = await carModel.findByIdAndUpdate(req.params.id, { carMake, carModel: model, carYear, carPrice, carDescription })
+    const imgs = req.files.map(item => {
+        const container = {};
+        container.url = item.path;
+        container.filename = item.filename;
+        return container;
+    })
+    car.carImages.push(...imgs)
+    if (deleteImages && deleteImages.length > 0) {
+        for (let filename of req.body.deleteImages) {
+            cloudinary.uploader.destroy(filename)
+        }
+        await car.updateOne({ $pull: { carImages: { filename: { $in: deleteImages } } } })
+    }
+    await car.save()
+    res.redirect(`/car/${car.id}`)
+}))
+
 app.delete('/car/:id', catchAsync(async (req, res) => {
     const id = req.params.id
     const car = await carModel.findById(id)

@@ -1,0 +1,85 @@
+<% layout ('partials/boilerplate.ejs') %>
+
+    <div class="mb-3 row d-flex justify-content-center">
+        <div class="col-6 col-lg-3">
+            <img id='car-add-img'
+                src="https://res.cloudinary.com/duh1ufu4r/image/upload/c_scale,w_180/v1638981976/car4let/My_Post_a8eedm.png"
+                alt="">
+        </div>
+    </div>
+
+
+    <form action='/car/<%=car.id%>/edit?_method=PUT' method='POST' novalidate class='needs-validation'
+        enctype='multipart/form-data'>
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-4">
+                <div class="mb-3">
+                    <label for="carMake" class="form-label">Car make</label>
+                    <select id='carMake' class="form-select" name='carMake' required
+                        aria-label="Default select example required">
+                        <option value='<%=car.carMake%>' selected>
+                            <%=car.carMake%>
+                        </option>
+                        <% for(let make of makes) { %>
+                            <option value="<%=make%>">
+                                <%=make%>
+                            </option>
+                            <% } %>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="carModel" class="form-label">Model</label>
+                    <input value='<%=car.carModel%>' autocomplete="off" required type="input" name='carModel'
+                        class="form-control" id="carModel">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="mb-3">
+                    <label for="carYear" class="form-label">Production year</label>
+                    <input value='<%=car.carYear%>' required type="text" onkeypress="return isNumber(event)"
+                        name='carYear' class="form-control" id="carYear">
+                </div>
+                <div class="mb-3">
+                    <label for="carPrice" class="form-label">Price (per day)</label>
+                    <input value='<%=car.carPrice%>' required type="text" onkeypress="return isNumber(event)"
+                        name='carPrice' class="form-control" id="carPrice">
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-8">
+                    <div class="mb-3">
+                        <label for="carDescription" class="form-label">Description</label>
+                        <textarea class='form-control' name="carDescription" id="carDescription" cols="30" rows="5"
+                            required><%=car.carDescription%></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-8">
+                    <div class='mb-3'>
+                        <label for="carPrice" class="form-label">Images:</label>
+                        <input type="file" name='carImages' multiple class="form-control" id="carPrice">
+                    </div>
+                </div>
+
+                <div class='row justify-content-center'>
+                    <div class='col-md-6'>
+                        <div class='mb-3 text-center'>
+                            <% car.carImages.forEach((img,i)=> { %>
+                                <img class='img-thumbnail' src="<%=img.thumbnail%>" alt="">
+                                <div class="form-check-inline">
+                                    <input type="checkbox" name="deleteImages[]" id="image-<%=i%>"
+                                        value='<%=img.filename%>'>
+                                </div>
+                                <label for="image-<%=i%>">Delete</label>
+                                <% })%>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row d-flex justify-content-center">
+                    <button type="submit" class="mb-3 btn">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>

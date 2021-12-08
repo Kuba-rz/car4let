@@ -8,7 +8,7 @@ const imageSchema = new Schema({
 })
 
 imageSchema.virtual('thumbnail').get(function () {
-    return this.url.replace('/upload', '/upload/w_317,h_211,c_scale')
+    return this.url.replace('/upload', '/upload/w_200')
 })
 
 const carSchema = new Schema({

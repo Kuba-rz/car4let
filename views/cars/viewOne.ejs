@@ -25,7 +25,7 @@
                 </ul>
                 <div class="card-body">
                     <p class="card-text"><span class='fw-bold'>Description: </span>
-                        <%=car.carDescription%>>
+                        <%=car.carDescription%>
                     </p>
                 </div>
                 <div class="card-body">
@@ -33,7 +33,7 @@
                     <form class='d-inline' action="/car/<%=car.id%>?_method=DELETE" method='POST'>
                         <button class="btn btn-danger card-link">Delete</button>
                     </form>
-                    <a href="#" class="btn btn-secondary card-link">Edit</a>
+                    <a href="/car/<%=car.id%>/edit" class="btn btn-secondary card-link">Edit</a>
                 </div>
             </div>
         </div>
