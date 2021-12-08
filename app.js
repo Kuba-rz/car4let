@@ -5,6 +5,7 @@ const methodOverride = require('method-override')
 const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
+const flash = require('connect-flash')
 
 const { cloudinary, storage } = require('./cloudinary/index')
 const multer = require('multer')
@@ -74,10 +75,17 @@ const sess = {
 }
 
 app.use(session(sess))
+app.use(flash())
 
 
 app.listen(3000, () => {
     console.log('Listening')
+})
+
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success') || false
+    res.locals.error = req.flash('error')
+    next()
 })
 
 app.get('/', (req, res) => {
@@ -140,6 +148,7 @@ app.put('/car/:id/edit', upload.array('carImages'), catchAsync(async (req, res) 
         await car.updateOne({ $pull: { carImages: { filename: { $in: deleteImages } } } })
     }
     await car.save()
+    req.flash('success', 'Car succesfully updated')
     res.redirect(`/car/${car.id}`)
 }))
 
@@ -152,6 +161,7 @@ app.delete('/car/:id', catchAsync(async (req, res) => {
         }
     }
     await carModel.findByIdAndDelete(id)
+    req.flash('success', 'Car succesfully deleted')
     res.redirect('/car/viewAll')
 }))
 
@@ -165,7 +175,8 @@ app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (r
         return container;
     })
     await car.save()
-    res.redirect('/car/new')
+    req.flash('success', 'Car succesfully added')
+    res.redirect(`/car/${car.id}`)
 }))
 
 
