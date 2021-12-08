@@ -4,6 +4,7 @@ const ejsMate = require('ejs-mate')
 const methodOverride = require('method-override')
 const path = require('path')
 const mongoose = require('mongoose')
+const session = require('express-session')
 
 const { cloudinary, storage } = require('./cloudinary/index')
 const multer = require('multer')
@@ -26,6 +27,7 @@ const { catchAsync } = require('./helpers/functions')
 
 //Database URL depending if we are in production
 const DBUrl = process.env.mongoAtlasURL || 'mongodb://localhost:27017/car4let'
+const secret = process.env.SECRET || 'car4letsecret'
 
 //Connect the app to mongoose
 async function connectMongo() {
@@ -58,6 +60,22 @@ app.use(express.json())
 app.use('/img', express.static(__dirname + '/images'));
 
 
+
+//Session options
+const sess = {
+    secret: secret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        //Make the cookie expire after a week
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}
+
+app.use(session(sess))
+
+
 app.listen(3000, () => {
     console.log('Listening')
 })
@@ -65,6 +83,7 @@ app.listen(3000, () => {
 app.get('/', (req, res) => {
     res.locals.title = 'Home'
     res.render('cars/homepage')
+    console.log(req.session)
 })
 
 app.get('/car/new', (req, res) => {
@@ -91,6 +110,7 @@ app.get('/car/:id', catchAsync(async (req, res) => {
     }
 }))
 
+//Render edit form and populate the fields
 app.get('/car/:id/edit', catchAsync(async (req, res) => {
     const car = await carModel.findById(req.params.id)
     const makes = require('./helpers/carMakes')
@@ -98,10 +118,13 @@ app.get('/car/:id/edit', catchAsync(async (req, res) => {
     res.render('cars/edit', { car, makes })
 }))
 
+//Update car
 app.put('/car/:id/edit', upload.array('carImages'), catchAsync(async (req, res) => {
     const { carMake, carYear, carPrice, carDescription, deleteImages } = req.body
     const model = req.body.carModel
+    //Update the fields in the DB
     const car = await carModel.findByIdAndUpdate(req.params.id, { carMake, carModel: model, carYear, carPrice, carDescription })
+    //Create an array for the uploaded images
     const imgs = req.files.map(item => {
         const container = {};
         container.url = item.path;
@@ -109,6 +132,7 @@ app.put('/car/:id/edit', upload.array('carImages'), catchAsync(async (req, res) 
         return container;
     })
     car.carImages.push(...imgs)
+    //If user has selected images to delete, for each one delete it from cloudinary and then from DB
     if (deleteImages && deleteImages.length > 0) {
         for (let filename of req.body.deleteImages) {
             cloudinary.uploader.destroy(filename)
