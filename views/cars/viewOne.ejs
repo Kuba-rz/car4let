@@ -1,0 +1,43 @@
+<% layout ('partials/boilerplate.ejs') %>
+    <div class="row">
+        <h1 class="mb-4 display-3 text-center">
+            <%=car.carMake%>
+                <%=car.carModel%>
+        </h1>
+    </div>
+    <div class="mb-3 row justify-content-around">
+        <div class="col-lg-6">
+            <div class="card text-center">
+                <img src="<%=car.carImages[0].url%>" class="img-fluid card-img-top" alt="...">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><span class='fw-bold'>Make: </span>
+                        <%=car.carMake%>
+                    </li>
+                    <li class="list-group-item"><span class='fw-bold'>Model: </span>
+                        <%=car.carModel%>
+                    </li>
+                    <li class="list-group-item"><span class='fw-bold'>Production Year: </span>
+                        <%=car.carYear%>
+                    </li>
+                    <li class="list-group-item"><span class='fw-bold'>Price per day: $</span>
+                        <%=car.carPrice%>
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <p class="card-text"><span class='fw-bold'>Description: </span>
+                        <%=car.carDescription%>>
+                    </p>
+                </div>
+                <div class="card-body">
+                    <a href="#" class="btn btn-book-car card-link">Book</a>
+                    <form class='d-inline' action="/car/<%=car.id%>?_method=DELETE" method='POST'>
+                        <button class="btn btn-danger card-link">Delete</button>
+                    </form>
+                    <a href="#" class="btn btn-secondary card-link">Edit</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h1>reviews:</h1>
+        </div>
+    </div>

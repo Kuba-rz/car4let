@@ -7,6 +7,10 @@ const imageSchema = new Schema({
     filename: String
 })
 
+imageSchema.virtual('thumbnail').get(function () {
+    return this.url.replace('/upload', '/upload/w_317,h_211,c_scale')
+})
+
 const carSchema = new Schema({
     carMake: {
         type: String,

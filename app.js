@@ -5,7 +5,7 @@ const methodOverride = require('method-override')
 const path = require('path')
 const mongoose = require('mongoose')
 
-const { storage } = require('./cloudinary/index')
+const { cloudinary, storage } = require('./cloudinary/index')
 const multer = require('multer')
 const upload = multer({ storage: storage })
 
@@ -73,25 +73,37 @@ app.get('/car/new', (req, res) => {
     res.render('cars/new', { makes })
 })
 
-app.get('/car/view', catchAsync(async (req, res) => {
+app.get('/car/viewAll', catchAsync(async (req, res) => {
     res.locals.title = 'All cars'
     const cars = await carModel.find({})
-    res.render('cars/view', { cars })
+    res.render('cars/viewAll', { cars })
 }))
 
 app.get('/car/:id', catchAsync(async (req, res) => {
     try {
         //If id does not exist in the database, redirect the user with a flash message
         const car = await carModel.findById(req.params.id)
-        res.redirect('/car/view')
+        res.locals.title = `${car.carMake} ${car.carModel}`
+        res.render('cars/viewOne', { car })
     }
     catch {
         throw new expressError('Cannot find the specified car', 404)
     }
 }))
 
+app.delete('/car/:id', catchAsync(async (req, res) => {
+    const id = req.params.id
+    const car = await carModel.findById(id)
+    if (car.carImages.length) {
+        for (let img of car.carImages) {
+            cloudinary.uploader.destroy(img.filename)
+        }
+    }
+    await carModel.findByIdAndDelete(id)
+    res.redirect('/car/viewAll')
+}))
+
 app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (req, res) => {
-    console.log(req.files)
     const car = new carModel(req.body)
     //Loop over the uploaded images and create a new array of objects, containing the url and pathname to store in the DB
     car.carImages = req.files.map(item => {
@@ -100,8 +112,6 @@ app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (r
         container.filename = item.filename;
         return container;
     })
-    console.log(car.carImages)
-    console.log(car)
     await car.save()
     res.redirect('/car/new')
 }))

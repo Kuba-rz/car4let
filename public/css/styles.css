@@ -1,3 +1,7 @@
+body {
+    font-family: 'Lato', sans-serif;
+}
+
 #nav-logo {
     width: 8rem;
     height: auto;
@@ -45,6 +49,16 @@ button[type='submit']:hover {
 }
 
 .btn-view-car:hover {
+    background-color:#f94144;
+    color: white;
+}
+
+.btn-book-car {
+    background-color:#f3722c;
+    color: white;
+}
+
+.btn-book-car:hover {
     background-color:#f94144;
     color: white;
 }
