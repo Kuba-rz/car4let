@@ -6,6 +6,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const flash = require('connect-flash')
+const bcrypt = require('bcrypt')
 
 const { cloudinary, storage } = require('./cloudinary/index')
 const multer = require('multer')
@@ -16,7 +17,7 @@ const carModel = require('./models/carModel')
 const expressError = require('./helpers/expressError')
 
 const carValidate = require('./helpers/carValidate')
-const { catchAsync } = require('./helpers/functions')
+const { catchAsync, checkRegister } = require('./helpers/functions')
 
 
 
@@ -199,7 +200,14 @@ app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (r
 
 //User routes
 app.get('/user/register', (req, res) => {
-    res.send('register')
+    res.locals.title = 'Register'
+    res.render('users/register')
+})
+
+app.post('/user/register', (req, res) => {
+    //Store user in req.session.user
+    //Add checkRegister middleware
+    res.send(req.body)
 })
 
 

@@ -1,0 +1,39 @@
+<% layout ('partials/boilerplate.ejs') %>
+
+    <div class="mb-3 row d-flex justify-content-center">
+        <div class="col-6 col-lg-3">
+            <img id='car-add-img'
+                src="https://res.cloudinary.com/duh1ufu4r/image/upload/c_scale,w_180/v1639157618/car4let/My_Post_1_qetltb.png"
+                alt="">
+        </div>
+    </div>
+
+
+    <form action='/user/register' method='POST' novalidate class='needs-validation'>
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-8">
+                <div class="mb-3">
+                    <label for="userEmail" class="form-label">Email</label>
+                    <input required type="email" name='userEmail' class="form-control" id="userEmail">
+                    <div class="invalid-feedback">
+                        Please provide a valid email.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="userUsername" class="form-label">Username</label>
+                    <input required type="text" name='userUsername' class="form-control" id="userUsername">
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="mb-3">
+                    <label for="userPassword" class="form-label">Password</label>
+                    <input type='password' class='form-control' name="userPassword" id="userPassword" required>
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center">
+                <button type="submit" class="mb-3 btn">Submit</button>
+            </div>
+        </div>
+    </form>

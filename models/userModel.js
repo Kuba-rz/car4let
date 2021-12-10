@@ -13,7 +13,7 @@ const userSchema = new Schema({
         required: [true, 'Username must be provided'],
         unique: [true, 'The specified username has already been registered'],
     },
-    password: {
+    hash: {
         type: Number,
         required: [true, 'Password must be provided']
     },
