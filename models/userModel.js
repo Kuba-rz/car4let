@@ -14,12 +14,11 @@ const userSchema = new Schema({
         unique: [true, 'The specified username has already been registered'],
     },
     hash: {
-        type: Number,
+        type: String,
         required: [true, 'Password must be provided']
     },
-    role: {
-        type: String,
-        enum: ['admin', 'user'],
+    admin: {
+        type: Boolean,
         required: true
     }
 })

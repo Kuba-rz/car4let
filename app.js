@@ -13,6 +13,7 @@ const multer = require('multer')
 const upload = multer({ storage: storage })
 
 const carModel = require('./models/carModel')
+const userModel = require('./models/userModel')
 
 const expressError = require('./helpers/expressError')
 
@@ -204,11 +205,22 @@ app.get('/user/register', (req, res) => {
     res.render('users/register')
 })
 
-app.post('/user/register', (req, res) => {
+app.post('/user/register', checkRegister, catchAsync(async (req, res) => {
     //Store user in req.session.user
     //Add checkRegister middleware
+    const { userEmail, userUsername, userPassword } = req.body
+    const hashedPassword = await new Promise((resolve, reject) => {
+        bcrypt.hash(userPassword, 10, function (err, hash) {
+            if (err) reject(err)
+            resolve(hash)
+        });
+    })
+    console.log(hashedPassword)
+    const user = new userModel({ email: userEmail, username: userUsername, hash: hashedPassword, admin: false })
+    await user.save()
+
     res.send(req.body)
-})
+}))
 
 
 
