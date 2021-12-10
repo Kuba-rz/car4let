@@ -8,33 +8,58 @@
     <div class="mb-3 row justify-content-around">
         <div class="col-lg-6">
             <div class="card text-center">
-                <img src="<%=car.carImages[0].url%>" class="img-fluid card-img-top" alt="...">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><span class='fw-bold'>Make: </span>
-                        <%=car.carMake%>
-                    </li>
-                    <li class="list-group-item"><span class='fw-bold'>Model: </span>
-                        <%=car.carModel%>
-                    </li>
-                    <li class="list-group-item"><span class='fw-bold'>Production Year: </span>
-                        <%=car.carYear%>
-                    </li>
-                    <li class="list-group-item"><span class='fw-bold'>Price per day: $</span>
-                        <%=car.carPrice%>
-                    </li>
-                </ul>
-                <div class="card-body">
-                    <p class="card-text"><span class='fw-bold'>Description: </span>
-                        <%=car.carDescription%>
-                    </p>
-                </div>
-                <div class="card-body">
-                    <a href="#" class="btn btn-book-car card-link">Book</a>
-                    <form class='d-inline' action="/car/<%=car.id%>?_method=DELETE" method='POST'>
-                        <button class="btn btn-danger card-link">Delete</button>
-                    </form>
-                    <a href="/car/<%=car.id%>/edit" class="btn btn-secondary card-link">Edit</a>
-                </div>
+                <% if(car.carImages[0]) {%>
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <% car.carImages.forEach((img, i)=> { %>
+                                <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                                    <img src="<%=img.url%>" class="d-block w-100" alt="...">
+                                </div>
+                                <% }) %>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    <% } else { %>
+                        <img src="https://res.cloudinary.com/duh1ufu4r/image/upload/v1639152634/car4let/16068135545fc607723e5a9_ikxrw7.jpg"
+                            class="view-all-img img-fluid rounded-start">
+                        <% } %>
+
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><span class='fw-bold'>Make: </span>
+                                    <%=car.carMake%>
+                                </li>
+                                <li class="list-group-item"><span class='fw-bold'>Model: </span>
+                                    <%=car.carModel%>
+                                </li>
+                                <li class="list-group-item"><span class='fw-bold'>Production Year: </span>
+                                    <%=car.carYear%>
+                                </li>
+                                <li class="list-group-item"><span class='fw-bold'>Price per day: $</span>
+                                    <%=car.carPrice%>
+                                </li>
+                            </ul>
+                            <div class="card-body">
+                                <p class="card-text"><span class='fw-bold'>Description: </span>
+                                    <%=car.carDescription%>
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <a href="#" class="btn btn-book-car card-link">Book</a>
+                                <form class='d-inline' action="/car/<%=car.id%>?_method=DELETE" method='POST'>
+                                    <button class="btn btn-danger card-link">Delete</button>
+                                </form>
+                                <a href="/car/<%=car.id%>/edit" class="btn btn-secondary card-link">Edit</a>
+                            </div>
             </div>
         </div>
         <div class="col-lg-6">

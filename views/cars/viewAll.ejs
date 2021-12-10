@@ -7,7 +7,12 @@
                 <div class="card mb-3">
                     <div class="row g-0">
                         <div class="col-lg-6">
-                            <img src="<%=cars[i].carImages[0].url%>" class="view-all-img img-fluid rounded-start">
+                            <% if(cars[i].carImages[0]) {%>
+                                <img src="<%=cars[i].carImages[0].url%>" class="view-all-img img-fluid rounded-start">
+                                <% } else { %>
+                                    <img src="https://res.cloudinary.com/duh1ufu4r/image/upload/v1639152634/car4let/16068135545fc607723e5a9_ikxrw7.jpg"
+                                        class="view-all-img img-fluid rounded-start">
+                                    <% } %>
                         </div>
                         <div class="col-lg-6">
                             <div class="card-body">

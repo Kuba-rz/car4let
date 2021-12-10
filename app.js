@@ -82,11 +82,19 @@ app.listen(3000, () => {
     console.log('Listening')
 })
 
+
+
+
+
 app.use((req, res, next) => {
     res.locals.success = req.flash('success') || false
     res.locals.error = req.flash('error')
     next()
 })
+
+
+
+
 
 app.get('/', (req, res) => {
     res.locals.title = 'Home'
@@ -94,6 +102,11 @@ app.get('/', (req, res) => {
     console.log(req.session)
 })
 
+
+
+
+
+//Car routes
 app.get('/car/new', (req, res) => {
     const makes = require('./helpers/carMakes')
     res.locals.title = 'Add a new car'
@@ -178,6 +191,16 @@ app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (r
     req.flash('success', 'Car succesfully added')
     res.redirect(`/car/${car.id}`)
 }))
+
+
+
+
+
+
+//User routes
+app.get('/user/register', (req, res) => {
+    res.send('register')
+})
 
 
 
