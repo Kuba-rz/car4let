@@ -63,6 +63,40 @@
             </div>
         </div>
         <div class="col-lg-6">
-            <h1>reviews:</h1>
+
+            <h1 class='text-center'>Leave a review for <%=car.carMake%>
+                    <%=car.carModel%>:</h1>
+
+            <form action='/car/<%=car.id%>/review' method='POST' novalidate class='mb-5 needs-validation'>
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="mb-3">
+                            <label for="reviewRating" class="form-label">Rating</label>
+                            <input required min='1' max='5' required type="range" name='reviewRating'
+                                class="form-control" id="reviewRating">
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-8">
+                        <div class="mb-3">
+                            <label for="reviewComment" class="form-label">Comment</label>
+                            <textarea required name="reviewComment" id="reviewComment" cols='50' rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row d-flex justify-content-center">
+                    <button type="submit" class="mb-3 btn">Submit</button>
+                </div>
+
+
+            </form>
+            <h1 class='text-center'>Reviews:</h1>
         </div>
+
+
+
+
+    </div>
     </div>

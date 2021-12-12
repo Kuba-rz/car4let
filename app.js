@@ -14,6 +14,7 @@ const upload = multer({ storage: storage })
 
 const carModel = require('./models/carModel')
 const userModel = require('./models/userModel')
+const reviewModel = require('./models/reviewModel')
 
 const expressError = require('./helpers/expressError')
 
@@ -258,6 +259,29 @@ app.get('/user/logout', (req, res) => {
     req.flash('success', 'See you later!')
     res.redirect('/')
 })
+
+
+
+
+
+
+
+
+//Review routes
+app.post('/car/:carid/review', isLoggedIn, catchAsync(async (req, res) => {
+    const { reviewRating, reviewComment } = req.body
+    const carId = req.params.carid
+    const car = await carModel.findById(carId)
+    const user = await userModel.findById(req.session.currentUser._id)
+    console.log(user)
+    const review = new reviewModel({ reviewRating, reviewComment, reviewOwner: user })
+    console.log(review)
+    car.carReviews.push(review)
+    await car.save()
+    await review.save()
+    req.flash('success', 'Review has been added succesfully')
+    res.redirect(`/car/${carId}`)
+}))
 
 
 
