@@ -26,8 +26,17 @@ function checkRegister(req, res, next) {
 
 function isLoggedIn(req, res, next) {
     if (!req.session.currentUser) {
+        req.session.redirectUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
         req.flash('error', 'Must be logged in')
         return res.redirect('/user/login')
+    }
+    next()
+}
+
+function isAdmin(req, res, next) {
+    if (!req.session.currentUser || !req.session.currentUser.admin) {
+        req.flash('error', 'Unauthorized access')
+        return res.redirect('/')
     }
     next()
 }
@@ -39,5 +48,6 @@ function isLoggedIn(req, res, next) {
 module.exports = {
     catchAsync,
     isLoggedIn,
+    isAdmin,
     checkRegister
 }

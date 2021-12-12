@@ -18,7 +18,7 @@ const userModel = require('./models/userModel')
 const expressError = require('./helpers/expressError')
 
 const carValidate = require('./helpers/carValidate')
-const { catchAsync, isLoggedIn, checkRegister } = require('./helpers/functions')
+const { catchAsync, isLoggedIn, isAdmin, checkRegister } = require('./helpers/functions')
 
 
 
@@ -109,7 +109,7 @@ app.get('/', (req, res) => {
 
 
 //Car routes
-app.get('/car/new', isLoggedIn, (req, res) => {
+app.get('/car/new', isAdmin, (req, res) => {
     const makes = require('./helpers/carMakes')
     res.locals.title = 'Add a new car'
     res.render('cars/new', { makes })
@@ -134,7 +134,7 @@ app.get('/car/:id', catchAsync(async (req, res) => {
 }))
 
 //Render edit form and populate the fields
-app.get('/car/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
+app.get('/car/:id/edit', isAdmin, catchAsync(async (req, res) => {
     const car = await carModel.findById(req.params.id)
     const makes = require('./helpers/carMakes')
     res.locals.title = `Edit`
@@ -142,7 +142,7 @@ app.get('/car/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
 }))
 
 //Update car
-app.put('/car/:id/edit', isLoggedIn, upload.array('carImages'), catchAsync(async (req, res) => {
+app.put('/car/:id/edit', isAdmin, upload.array('carImages'), catchAsync(async (req, res) => {
     const { carMake, carYear, carPrice, carDescription, deleteImages } = req.body
     const model = req.body.carModel
     //Update the fields in the DB
@@ -167,7 +167,7 @@ app.put('/car/:id/edit', isLoggedIn, upload.array('carImages'), catchAsync(async
     res.redirect(`/car/${car.id}`)
 }))
 
-app.delete('/car/:id', isLoggedIn, catchAsync(async (req, res) => {
+app.delete('/car/:id', isAdmin, catchAsync(async (req, res) => {
     const id = req.params.id
     const car = await carModel.findById(id)
     if (car.carImages.length) {
@@ -180,7 +180,7 @@ app.delete('/car/:id', isLoggedIn, catchAsync(async (req, res) => {
     res.redirect('/car/viewAll')
 }))
 
-app.post('/car/new', isLoggedIn, upload.array('carImages'), carValidate, catchAsync(async (req, res) => {
+app.post('/car/new', isAdmin, upload.array('carImages'), carValidate, catchAsync(async (req, res) => {
     const car = new carModel(req.body)
     //Loop over the uploaded images and create a new array of objects, containing the url and pathname to store in the DB
     car.carImages = req.files.map(item => {
@@ -189,9 +189,6 @@ app.post('/car/new', isLoggedIn, upload.array('carImages'), carValidate, catchAs
         container.filename = item.filename;
         return container;
     })
-    const owner = await userModel.findById(req.session.currentUser.id)
-    console.log(owner)
-    car.carOwner = owner
     await car.save()
     req.flash('success', 'Car succesfully added')
     res.redirect(`/car/${car.id}`)
@@ -219,6 +216,7 @@ app.post('/user/register', checkRegister, catchAsync(async (req, res) => {
 
     const user = new userModel({ email: userEmail, username: userUsername, hash: hashedPassword, admin: false })
     await user.save()
+    req.session.currentUser = user
     req.flash('success', 'Account succesfully created')
     res.redirect('/')
 }))
@@ -250,7 +248,8 @@ app.post('/user/login', catchAsync(async (req, res) => {
     //Store the logged in user in the session
     req.session.currentUser = user[0]
     req.flash('success', 'Welcome back!')
-    res.redirect('/')
+    const redirectUrl = req.session.redirectUrl || '/'
+    res.redirect(redirectUrl)
 }))
 
 //Log the user out
