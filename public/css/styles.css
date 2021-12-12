@@ -66,3 +66,13 @@ button[type='submit']:hover {
 .user-nav {
     color: white;
 }
+
+.delete-rev-btn, .delete-rev-form {
+    position: absolute;
+    right:10px;
+    bottom:10px;
+}
+
+#main-nav {
+    position: sticky;
+}

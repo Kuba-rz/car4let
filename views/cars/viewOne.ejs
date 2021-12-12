@@ -1,6 +1,6 @@
 <% layout ('partials/boilerplate.ejs') %>
     <div class="row">
-        <h1 class="mb-4 display-3 text-center">
+        <h1 class="mb-5 display-3 text-center">
             <%=car.carMake%>
                 <%=car.carModel%>
         </h1>
@@ -64,12 +64,12 @@
         </div>
         <div class="col-lg-6">
 
-            <h1 class='text-center'>Leave a review for <%=car.carMake%>
+            <h1 class='mt-5 mt-lg-0 text-center'>Leave a review for <%=car.carMake%>
                     <%=car.carModel%>:</h1>
 
             <form action='/car/<%=car.id%>/review' method='POST' novalidate class='mb-5 needs-validation'>
                 <div class="row d-flex justify-content-center">
-                    <div class="col-lg-8">
+                    <div class="col-lg-10">
                         <div class="mb-3">
                             <label for="reviewRating" class="form-label">Rating</label>
                             <input required min='1' max='5' required type="range" name='reviewRating'
@@ -78,10 +78,11 @@
                     </div>
 
 
-                    <div class="col-lg-8">
+                    <div class="col-lg-10">
                         <div class="mb-3">
                             <label for="reviewComment" class="form-label">Comment</label>
-                            <textarea required name="reviewComment" id="reviewComment" cols='50' rows="3"></textarea>
+                            <textarea class='form-control' required name="reviewComment" id="reviewComment" cols='50'
+                                rows="3"></textarea>
                         </div>
                     </div>
                 </div>
@@ -95,18 +96,34 @@
             <h1 class='mb-3 text-center'>Reviews:</h1>
             <% for(let review of car.carReviews) { %>
                 <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <b>Review:</b>
-                        <%=review.reviewRating%> <br>
-                            <b>Comment:</b>
-                            <%=review.reviewComment%> <br>
-                                <b>By:</b>
-                                <%=review.reviewOwner.username%> <br>
-                                    <hr>
+                    <div class="col-lg-10">
+
+                        <div class="card mb-3">
+
+
+                            <div class="card-body">
+                                <h5 class="card-title"> <b>Review:</b>
+                                    <%=review.reviewRating%>
+                                </h5>
+                                <p class="card-text"> <b>Comment:</b>
+                                    <%=review.reviewComment%>
+                                </p>
+                                <p class="card-text"><small class="text-muted"><b>By:</b>
+                                        <%=review.reviewOwner.username%>
+                                    </small></p>
+                            </div>
+                            <form action="/car/<%=car.id%>/review/<%=review._id%>?_method=DELETE" method='POST'>
+                                <button class='delete-rev-btn btn btn-danger'>Delete</button>
+                            </form>
+
+
+                        </div>
                     </div>
                 </div>
                 <% } %>
         </div>
+
+    </div>
 
 
 
