@@ -125,7 +125,12 @@ app.get('/car/viewAll', catchAsync(async (req, res) => {
 app.get('/car/:id', catchAsync(async (req, res) => {
     try {
         //If id does not exist in the database, redirect the user with a flash message
-        const car = await carModel.findById(req.params.id)
+        const car = await carModel.findById(req.params.id).populate({
+            path: 'carReviews',
+            populate: {
+                path: 'reviewOwner'
+            }
+        })
         res.locals.title = `${car.carMake} ${car.carModel}`
         res.render('cars/viewOne', { car })
     }

@@ -92,7 +92,20 @@
 
 
             </form>
-            <h1 class='text-center'>Reviews:</h1>
+            <h1 class='mb-3 text-center'>Reviews:</h1>
+            <% for(let review of car.carReviews) { %>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <b>Review:</b>
+                        <%=review.reviewRating%> <br>
+                            <b>Comment:</b>
+                            <%=review.reviewComment%> <br>
+                                <b>By:</b>
+                                <%=review.reviewOwner.username%> <br>
+                                    <hr>
+                    </div>
+                </div>
+                <% } %>
         </div>
 
 
