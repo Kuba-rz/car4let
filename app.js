@@ -18,7 +18,7 @@ const userModel = require('./models/userModel')
 const expressError = require('./helpers/expressError')
 
 const carValidate = require('./helpers/carValidate')
-const { catchAsync, checkRegister } = require('./helpers/functions')
+const { catchAsync, isLoggedIn, checkRegister } = require('./helpers/functions')
 
 
 
@@ -91,6 +91,7 @@ app.listen(3000, () => {
 app.use((req, res, next) => {
     res.locals.success = req.flash('success') || false
     res.locals.error = req.flash('error')
+    res.locals.currentUser = req.session.currentUser
     next()
 })
 
@@ -101,7 +102,6 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
     res.locals.title = 'Home'
     res.render('cars/homepage')
-    console.log(req.session)
 })
 
 
@@ -109,7 +109,7 @@ app.get('/', (req, res) => {
 
 
 //Car routes
-app.get('/car/new', (req, res) => {
+app.get('/car/new', isLoggedIn, (req, res) => {
     const makes = require('./helpers/carMakes')
     res.locals.title = 'Add a new car'
     res.render('cars/new', { makes })
@@ -134,7 +134,7 @@ app.get('/car/:id', catchAsync(async (req, res) => {
 }))
 
 //Render edit form and populate the fields
-app.get('/car/:id/edit', catchAsync(async (req, res) => {
+app.get('/car/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     const car = await carModel.findById(req.params.id)
     const makes = require('./helpers/carMakes')
     res.locals.title = `Edit`
@@ -142,7 +142,7 @@ app.get('/car/:id/edit', catchAsync(async (req, res) => {
 }))
 
 //Update car
-app.put('/car/:id/edit', upload.array('carImages'), catchAsync(async (req, res) => {
+app.put('/car/:id/edit', isLoggedIn, upload.array('carImages'), catchAsync(async (req, res) => {
     const { carMake, carYear, carPrice, carDescription, deleteImages } = req.body
     const model = req.body.carModel
     //Update the fields in the DB
@@ -167,7 +167,7 @@ app.put('/car/:id/edit', upload.array('carImages'), catchAsync(async (req, res) 
     res.redirect(`/car/${car.id}`)
 }))
 
-app.delete('/car/:id', catchAsync(async (req, res) => {
+app.delete('/car/:id', isLoggedIn, catchAsync(async (req, res) => {
     const id = req.params.id
     const car = await carModel.findById(id)
     if (car.carImages.length) {
@@ -180,7 +180,7 @@ app.delete('/car/:id', catchAsync(async (req, res) => {
     res.redirect('/car/viewAll')
 }))
 
-app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (req, res) => {
+app.post('/car/new', isLoggedIn, upload.array('carImages'), carValidate, catchAsync(async (req, res) => {
     const car = new carModel(req.body)
     //Loop over the uploaded images and create a new array of objects, containing the url and pathname to store in the DB
     car.carImages = req.files.map(item => {
@@ -189,6 +189,9 @@ app.post('/car/new', upload.array('carImages'), carValidate, catchAsync(async (r
         container.filename = item.filename;
         return container;
     })
+    const owner = await userModel.findById(req.session.currentUser.id)
+    console.log(owner)
+    car.carOwner = owner
     await car.save()
     req.flash('success', 'Car succesfully added')
     res.redirect(`/car/${car.id}`)
@@ -206,8 +209,6 @@ app.get('/user/register', (req, res) => {
 })
 
 app.post('/user/register', checkRegister, catchAsync(async (req, res) => {
-    //Store user in req.session.user
-    //Add checkRegister middleware
     const { userEmail, userUsername, userPassword } = req.body
     const hashedPassword = await new Promise((resolve, reject) => {
         bcrypt.hash(userPassword, 10, function (err, hash) {
@@ -215,14 +216,49 @@ app.post('/user/register', checkRegister, catchAsync(async (req, res) => {
             resolve(hash)
         });
     })
-    console.log(hashedPassword)
+
     const user = new userModel({ email: userEmail, username: userUsername, hash: hashedPassword, admin: false })
     await user.save()
-
-    res.send(req.body)
+    req.flash('success', 'Account succesfully created')
+    res.redirect('/')
 }))
 
+app.get('/user/login', (req, res) => {
+    res.locals.title = 'Login'
+    res.render('users/login')
+})
 
+app.post('/user/login', catchAsync(async (req, res) => {
+    const { userUsername, userPassword } = req.body
+    const user = await userModel.find({ username: userUsername })
+    if (!user.length) {
+        req.flash('error', 'Invalid username or password')
+        return res.redirect('/user/login')
+    }
+    const hash = user[0].hash
+    //Check if password matches
+    const result = await new Promise((resolve, reject) => {
+        bcrypt.compare(userPassword, hash, function (err, result) {
+            if (err) reject(err)
+            resolve(result)
+        });
+    })
+    if (!result) {
+        req.flash('error', 'Invalid username or password')
+        return res.redirect('/user/login')
+    }
+    //Store the logged in user in the session
+    req.session.currentUser = user[0]
+    req.flash('success', 'Welcome back!')
+    res.redirect('/')
+}))
+
+//Log the user out
+app.get('/user/logout', (req, res) => {
+    req.session.currentUser = undefined
+    req.flash('success', 'See you later!')
+    res.redirect('/')
+})
 
 
 

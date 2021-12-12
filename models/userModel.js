@@ -23,6 +23,14 @@ const userSchema = new Schema({
     }
 })
 
+userSchema.post('save', function (error, doc, next) {
+    if (error.name === 'MongoServerError' && error.code === 11000) {
+        next(new Error('The email address or username is already registered'));
+    } else {
+        next();
+    }
+});
+
 const Users = mongoose.model('User', userSchema)
 
 module.exports = Users

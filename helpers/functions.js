@@ -1,3 +1,6 @@
+const userModel = require('../models/userModel')
+const bcrypt = require('bcrypt')
+
 function catchAsync(fn) {
     //An error handler for async functions
     return function (req, res, next) {
@@ -21,10 +24,20 @@ function checkRegister(req, res, next) {
     next()
 }
 
+function isLoggedIn(req, res, next) {
+    if (!req.session.currentUser) {
+        req.flash('error', 'Must be logged in')
+        return res.redirect('/user/login')
+    }
+    next()
+}
+
+
 
 
 
 module.exports = {
     catchAsync,
+    isLoggedIn,
     checkRegister
 }

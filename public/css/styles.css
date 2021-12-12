@@ -62,3 +62,7 @@ button[type='submit']:hover {
     background-color:#f94144;
     color: white;
 }
+
+.user-nav {
+    color: white;
+}

@@ -34,7 +34,11 @@ const carSchema = new Schema({
     carDescription: {
         type: String
     },
-    carImages: [imageSchema]
+    carImages: [imageSchema],
+    carOwner: {
+        type: Schema.Types.ObjectID,
+        ref: 'User'
+    }
 })
 
 const Cars = mongoose.model('Car', carSchema)
