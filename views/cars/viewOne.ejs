@@ -17,16 +17,18 @@
                                 </div>
                                 <% }) %>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+                        <% if (car.carImages.length> 1) { %>
+                            <button class="carousel-control-prev" type="button"
+                                data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            <% } %>
                     </div>
                     <% } else { %>
                         <img src="https://res.cloudinary.com/duh1ufu4r/image/upload/v1639152634/car4let/16068135545fc607723e5a9_ikxrw7.jpg"
@@ -54,33 +56,47 @@
                                 </p>
                             </div>
                             <div class="card-body">
-                                <a href="#" class="btn btn-book-car card-link">Book</a>
-                                <form class='d-inline' action="/car/<%=car.id%>?_method=DELETE" method='POST'>
-                                    <button class="btn btn-danger card-link">Delete</button>
-                                </form>
-                                <a href="/car/<%=car.id%>/edit" class="btn btn-secondary card-link">Edit</a>
+                                <a href="/car/<%=car.id%>/book" class="btn btn-book-car card-link">Book</a>
+                                <% if (currentUser && currentUser.admin) { %>
+                                    <form class='d-inline' action="/car/<%=car.id%>?_method=DELETE" method='POST'>
+                                        <button class="btn btn-danger card-link">Delete</button>
+                                    </form>
+                                    <a href="/car/<%=car.id%>/edit" class="btn btn-secondary card-link">Edit</a>
+                                    <% } %>
                             </div>
             </div>
         </div>
         <div class="col-lg-6">
 
-            <h1 class='mt-5 mt-lg-0 text-center'>Leave a review for <%=car.carMake%>
+            <h1 class='mt-5 mt-lg-0 text-center text-decoration-underline'>Leave a review for <%=car.carMake%>
                     <%=car.carModel%>:</h1>
 
             <form action='/car/<%=car.id%>/review' method='POST' novalidate class='mb-5 needs-validation'>
                 <div class="row d-flex justify-content-center">
-                    <div class="col-lg-10">
+                    <div class="mt-4 col-lg-10 d-flex justify-content-center">
                         <div class="mb-3">
-                            <label for="reviewRating" class="form-label">Rating</label>
-                            <input required min='1' max='5' required type="range" name='reviewRating'
-                                class="form-control" id="reviewRating">
+                            <fieldset class="text-center starability-coinFlip">
+                                <legend>Rating:</legend>
+                                <input type="radio" id="no-rate" class="input-no-rate" name="reviewRating" value="0"
+                                    checked aria-label="No rating." />
+                                <input type="radio" id="first-rate1" name="reviewRating" value="1" />
+                                <label for="first-rate1" title="Terrible">1 star</label>
+                                <input type="radio" id="first-rate2" name="reviewRating" value="2" />
+                                <label for="first-rate2" title="Not good">2 stars</label>
+                                <input type="radio" id="first-rate3" name="reviewRating" value="3" />
+                                <label for="first-rate3" title="Average">3 stars</label>
+                                <input type="radio" id="first-rate4" name="reviewRating" value="4" />
+                                <label for="first-rate4" title="Very good">4 stars</label>
+                                <input type="radio" id="first-rate5" name="reviewRating" value="5" />
+                                <label for="first-rate5" title="Amazing">5 stars</label>
+                            </fieldset>
                         </div>
                     </div>
 
 
                     <div class="col-lg-10">
                         <div class="mb-3">
-                            <label for="reviewComment" class="form-label">Comment</label>
+                            <label for="reviewComment" class="form-label">Comment:</label>
                             <textarea class='form-control' required name="reviewComment" id="reviewComment" cols='50'
                                 rows="3"></textarea>
                         </div>
@@ -93,34 +109,43 @@
 
 
             </form>
+            <hr>
             <h1 class='mb-3 text-center'>Reviews:</h1>
-            <% for(let review of car.carReviews) { %>
-                <div class="row justify-content-center">
-                    <div class="col-lg-10">
+            <% if (car.carReviews.length){ %>
+                <% for(let review of car.carReviews) { %>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
 
-                        <div class="card mb-3">
+                            <div class="card mb-3">
 
 
-                            <div class="card-body">
-                                <h5 class="card-title"> <b>Review:</b>
-                                    <%=review.reviewRating%>
-                                </h5>
-                                <p class="card-text"> <b>Comment:</b>
-                                    <%=review.reviewComment%>
-                                </p>
-                                <p class="card-text"><small class="text-muted"><b>By:</b>
-                                        <%=review.reviewOwner.username%>
-                                    </small></p>
+                                <div class="card-body">
+                                    <h5 class="card-title"> <b>Rating:</b>
+                                        <p class="mt-1 starability-result" data-rating="<%=review.reviewRating%>">
+                                        </p>
+                                    </h5>
+                                    <p class="card-text"> <b>Comment:</b>
+                                        <%=review.reviewComment%>
+                                    </p>
+                                    <p class="card-text"><small class="text-muted"><b>By:</b>
+                                            <%=review.reviewOwner.username%>
+                                        </small></p>
+                                </div>
+                                <% if ((currentUser && currentUser._id==review.reviewOwner._id) || (currentUser &&
+                                    currentUser.admin)) { %>
+                                    <form action="/car/<%=car.id%>/review/<%=review._id%>?_method=DELETE" method='POST'>
+                                        <button class='delete-rev-btn btn btn-danger'>Delete</button>
+                                    </form>
+                                    <% } %>
+
+
                             </div>
-                            <form action="/car/<%=car.id%>/review/<%=review._id%>?_method=DELETE" method='POST'>
-                                <button class='delete-rev-btn btn btn-danger'>Delete</button>
-                            </form>
-
-
                         </div>
                     </div>
-                </div>
-                <% } %>
+                    <% } %>
+                        <% } else { %>
+                            <h4 class='text-center'>No reviews yet...</h4>
+                            <% } %>
         </div>
 
     </div>

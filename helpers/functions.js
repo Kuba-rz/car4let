@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel')
 const bcrypt = require('bcrypt')
+const reviewModel = require('../models/reviewModel')
 
 function catchAsync(fn) {
     //An error handler for async functions
@@ -26,7 +27,6 @@ function checkRegister(req, res, next) {
 
 function isLoggedIn(req, res, next) {
     if (!req.session.currentUser) {
-        req.session.redirectUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
         req.flash('error', 'Must be logged in')
         return res.redirect('/user/login')
     }
@@ -41,6 +41,17 @@ function isAdmin(req, res, next) {
     next()
 }
 
+async function isReviewOwnerOrAdmin(req, res, next) {
+    const { reviewId } = req.params
+    const review = await reviewModel.findById(reviewId)
+    if (req.session.currentUser._id == review.reviewOwner || req.session.currentUser.admin) {
+        return next()
+
+    }
+    req.flash('error', 'Unauthorized access')
+    return res.redirect(`/car/${req.params.carId}`)
+}
+
 
 
 
@@ -48,6 +59,7 @@ function isAdmin(req, res, next) {
 module.exports = {
     catchAsync,
     isLoggedIn,
+    isReviewOwnerOrAdmin,
     isAdmin,
     checkRegister
 }

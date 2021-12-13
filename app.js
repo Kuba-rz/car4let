@@ -19,7 +19,7 @@ const reviewModel = require('./models/reviewModel')
 const expressError = require('./helpers/expressError')
 
 const carValidate = require('./helpers/carValidate')
-const { catchAsync, isLoggedIn, isAdmin, checkRegister } = require('./helpers/functions')
+const { catchAsync, isLoggedIn, isReviewOwnerOrAdmin, isAdmin, checkRegister } = require('./helpers/functions')
 
 
 
@@ -93,6 +93,7 @@ app.use((req, res, next) => {
     res.locals.success = req.flash('success') || false
     res.locals.error = req.flash('error')
     res.locals.currentUser = req.session.currentUser
+    console.log(req.session.currentUser)
     next()
 })
 
@@ -122,10 +123,10 @@ app.get('/car/viewAll', catchAsync(async (req, res) => {
     res.render('cars/viewAll', { cars })
 }))
 
-app.get('/car/:id', catchAsync(async (req, res) => {
+app.get('/car/:carId', catchAsync(async (req, res) => {
     try {
         //If id does not exist in the database, redirect the user with a flash message
-        const car = await carModel.findById(req.params.id).populate({
+        const car = await carModel.findById(req.params.carId).populate({
             path: 'carReviews',
             populate: {
                 path: 'reviewOwner'
@@ -140,19 +141,23 @@ app.get('/car/:id', catchAsync(async (req, res) => {
 }))
 
 //Render edit form and populate the fields
-app.get('/car/:id/edit', isAdmin, catchAsync(async (req, res) => {
-    const car = await carModel.findById(req.params.id)
+app.get('/car/:carId/edit', isAdmin, catchAsync(async (req, res) => {
+    const car = await carModel.findById(req.params.carId)
     const makes = require('./helpers/carMakes')
     res.locals.title = `Edit`
     res.render('cars/edit', { car, makes })
 }))
 
+app.get('/car/:carId/book', isLoggedIn, catchAsync(async (req, res) => {
+    res.send('book')
+}))
+
 //Update car
-app.put('/car/:id/edit', isAdmin, upload.array('carImages'), catchAsync(async (req, res) => {
+app.put('/car/:carId/edit', isAdmin, upload.array('carImages'), catchAsync(async (req, res) => {
     const { carMake, carYear, carPrice, carDescription, deleteImages } = req.body
     const model = req.body.carModel
     //Update the fields in the DB
-    const car = await carModel.findByIdAndUpdate(req.params.id, { carMake, carModel: model, carYear, carPrice, carDescription })
+    const car = await carModel.findByIdAndUpdate(req.params.carId, { carMake, carModel: model, carYear, carPrice, carDescription })
     //Create an array for the uploaded images
     const imgs = req.files.map(item => {
         const container = {};
@@ -173,8 +178,8 @@ app.put('/car/:id/edit', isAdmin, upload.array('carImages'), catchAsync(async (r
     res.redirect(`/car/${car.id}`)
 }))
 
-app.delete('/car/:id', isAdmin, catchAsync(async (req, res) => {
-    const id = req.params.id
+app.delete('/car/:carId', isAdmin, catchAsync(async (req, res) => {
+    const id = req.params.carId
     const car = await carModel.findById(id)
     if (car.carImages.length) {
         for (let img of car.carImages) {
@@ -254,12 +259,11 @@ app.post('/user/login', catchAsync(async (req, res) => {
     //Store the logged in user in the session
     req.session.currentUser = user[0]
     req.flash('success', 'Welcome back!')
-    const redirectUrl = req.session.redirectUrl || '/'
-    res.redirect(redirectUrl)
+    res.redirect('/')
 }))
 
 //Log the user out
-app.get('/user/logout', (req, res) => {
+app.get('/user/logout', isLoggedIn, (req, res) => {
     req.session.currentUser = undefined
     req.flash('success', 'See you later!')
     res.redirect('/')
@@ -273,9 +277,9 @@ app.get('/user/logout', (req, res) => {
 
 
 //Review routes
-app.post('/car/:carid/review', isLoggedIn, catchAsync(async (req, res) => {
+app.post('/car/:carId/review', isLoggedIn, catchAsync(async (req, res) => {
     const { reviewRating, reviewComment } = req.body
-    const carId = req.params.carid
+    const carId = req.params.carId
     const car = await carModel.findById(carId)
     const user = await userModel.findById(req.session.currentUser._id)
     console.log(user)
@@ -285,6 +289,17 @@ app.post('/car/:carid/review', isLoggedIn, catchAsync(async (req, res) => {
     await car.save()
     await review.save()
     req.flash('success', 'Review has been added succesfully')
+    res.redirect(`/car/${carId}`)
+}))
+
+app.delete('/car/:carId/review/:reviewId', isLoggedIn, isReviewOwnerOrAdmin, catchAsync(async (req, res) => {
+    const { carId, reviewId } = req.params
+    await reviewModel.findByIdAndDelete(reviewId)
+    const car = await carModel.findById(carId)
+    const reviewIndex = car.carReviews.indexOf(reviewId)
+    car.carReviews.splice(reviewIndex, 1)
+    await car.save()
+    req.flash('success', 'Review has been deleted succesfully')
     res.redirect(`/car/${carId}`)
 }))
 
