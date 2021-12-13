@@ -9,6 +9,23 @@ const imageSchema = new Schema({
     filename: String
 })
 
+const bookingSchema = new Schema({
+    booked: {
+        type: Boolean,
+        required: true
+    },
+    bookedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    bookedFrom: {
+        type: Date
+    },
+    bookedUntil: {
+        type: Date
+    }
+})
+
 imageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200')
 })
@@ -40,7 +57,12 @@ const carSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Review'
         }
-    ]
+    ],
+    carBooking: bookingSchema
+})
+
+carSchema.virtual('name').get(function () {
+    return `${this.carMake} ${this.carModel}`
 })
 
 const Cars = mongoose.model('Car', carSchema)

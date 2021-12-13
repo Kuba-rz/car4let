@@ -93,7 +93,6 @@ app.use((req, res, next) => {
     res.locals.success = req.flash('success') || false
     res.locals.error = req.flash('error')
     res.locals.currentUser = req.session.currentUser
-    console.log(req.session.currentUser)
     next()
 })
 
@@ -149,7 +148,9 @@ app.get('/car/:carId/edit', isAdmin, catchAsync(async (req, res) => {
 }))
 
 app.get('/car/:carId/book', isLoggedIn, catchAsync(async (req, res) => {
-    res.send('book')
+    res.locals.title = 'Book car'
+    const car = await carModel.findById(req.params.carId)
+    res.render('cars/book', { car })
 }))
 
 //Update car
@@ -200,6 +201,7 @@ app.post('/car/new', isAdmin, upload.array('carImages'), carValidate, catchAsync
         container.filename = item.filename;
         return container;
     })
+    car.carBooking = { booked: false }
     await car.save()
     req.flash('success', 'Car succesfully added')
     res.redirect(`/car/${car.id}`)
