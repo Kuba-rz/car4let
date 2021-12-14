@@ -24,6 +24,8 @@ const bookingSchema = new Schema({
     bookedUntil: {
         type: Date
     }
+}, {
+    strictPopulate: false
 })
 
 imageSchema.virtual('thumbnail').get(function () {
@@ -60,7 +62,7 @@ const carSchema = new Schema({
     ],
     carBooking: bookingSchema
 }, {
-    strict: false
+    strictPopulate: false
 })
 
 carSchema.virtual('name').get(function () {

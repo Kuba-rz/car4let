@@ -20,7 +20,7 @@ const bookingModel = require('./models/bookingModel')
 const expressError = require('./helpers/expressError')
 
 const carValidate = require('./helpers/carValidate')
-const { catchAsync, isLoggedIn, isReviewOwnerOrAdmin, isAdmin, checkRegister } = require('./helpers/functions')
+const { catchAsync, isLoggedIn, isReviewOwnerOrAdmin, carNotBooked, isAdmin, checkRegister } = require('./helpers/functions')
 
 
 
@@ -119,7 +119,10 @@ app.get('/car/new', isAdmin, (req, res) => {
 
 app.get('/car/viewAll', catchAsync(async (req, res) => {
     res.locals.title = 'All cars'
-    const cars = await carModel.find({}).populate('carBooking')
+    const cars = await carModel.find({}).populate({
+        path: 'carBooking',
+        populate: { path: 'bookedBy' }
+    })
     res.render('cars/viewAll', { cars })
 }))
 
@@ -151,13 +154,13 @@ app.get('/car/:carId/edit', isAdmin, catchAsync(async (req, res) => {
 
 
 //Booking routes
-app.get('/car/:carId/book', isLoggedIn, catchAsync(async (req, res) => {
+app.get('/car/:carId/book', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
     res.locals.title = 'Book car'
     const car = await carModel.findById(req.params.carId)
     res.render('cars/book', { car })
 }))
 
-app.post('/car/:carId/book', isLoggedIn, catchAsync(async (req, res) => {
+app.post('/car/:carId/book', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
     const { bookedFrom, bookedUntil } = req.body
     const car = await carModel.findById(req.params.carId)
     const user = await userModel.findById(req.session.currentUser._id)

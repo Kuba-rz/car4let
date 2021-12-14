@@ -56,13 +56,19 @@
                                 </p>
                             </div>
                             <div class="card-body">
-                                <a href="/car/<%=car.id%>/book" class="btn btn-book-car card-link">Book</a>
-                                <% if (currentUser && currentUser.admin) { %>
-                                    <form class='d-inline' action="/car/<%=car.id%>?_method=DELETE" method='POST'>
-                                        <button class="btn btn-danger card-link">Delete</button>
-                                    </form>
-                                    <a href="/car/<%=car.id%>/edit" class="btn btn-secondary card-link">Edit</a>
-                                    <% } %>
+                                <% if(!car.carBooking.booked){ %>
+                                    <a href="/car/<%=car.id%>/book" class="btn btn-book-car card-link">Book</a>
+                                    <% } else { %>
+                                        <span class='text-danger'>Currently booked</span>
+                                        <% } %>
+                                            <% if (currentUser && currentUser.admin) { %>
+                                                <form class='d-inline' action="/car/<%=car.id%>?_method=DELETE"
+                                                    method='POST'>
+                                                    <button class="btn btn-danger card-link">Delete</button>
+                                                </form>
+                                                <a href="/car/<%=car.id%>/edit"
+                                                    class="btn btn-secondary card-link">Edit</a>
+                                                <% } %>
                             </div>
             </div>
         </div>

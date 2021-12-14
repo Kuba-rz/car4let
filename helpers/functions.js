@@ -1,6 +1,7 @@
 const userModel = require('../models/userModel')
 const bcrypt = require('bcrypt')
 const reviewModel = require('../models/reviewModel')
+const carModel = require('../models/carModel')
 
 function catchAsync(fn) {
     //An error handler for async functions
@@ -52,6 +53,16 @@ async function isReviewOwnerOrAdmin(req, res, next) {
     return res.redirect(`/car/${req.params.carId}`)
 }
 
+async function carNotBooked(req, res, next) {
+    const { carId } = req.params
+    const car = await carModel.findById(carId)
+    if (!car.carBooking.booked) {
+        return next()
+    }
+    req.flash('This car is already booked')
+    return res.redirect(`/car/${car._id}`)
+}
+
 
 
 
@@ -60,6 +71,7 @@ module.exports = {
     catchAsync,
     isLoggedIn,
     isReviewOwnerOrAdmin,
+    carNotBooked,
     isAdmin,
     checkRegister
 }

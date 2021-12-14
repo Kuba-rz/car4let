@@ -1,4 +1,6 @@
 const carModel = require('../models/carModel')
+const bookingModel = require('../models/bookingModel')
+const reviewModel = require('../models/reviewModel')
 const mongoose = require('mongoose')
 const carMakes = require('./carMakes')
 
@@ -20,6 +22,8 @@ connectMongo()
 
 async function seed() {
     await carModel.remove({})
+    await bookingModel.remove({})
+    await reviewModel.remove({})
 
     for (let i = 0; i < 10; i++) {
         const carMake = carMakes[[Math.floor(Math.random() * carMakes.length)]]
