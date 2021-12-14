@@ -25,7 +25,8 @@ async function seed() {
         const carMake = carMakes[[Math.floor(Math.random() * carMakes.length)]]
         const carPrice = Math.floor(Math.random() * 100)
         const carImages = { url: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80', filename: 'SEEDING' }
-        const car = new carModel({ carMake, carModel: 'Seeding test', carYear: 2015, carPrice, carDescription: 'This is from a generic seed guys', carImages })
+        const carBooking = { booked: false }
+        const car = new carModel({ carMake, carModel: 'Seeding test', carYear: 2015, carPrice, carDescription: 'This is from a generic seed guys', carImages, carBooking })
         await car.save()
     }
 }

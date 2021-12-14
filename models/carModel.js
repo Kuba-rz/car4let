@@ -59,6 +59,8 @@ const carSchema = new Schema({
         }
     ],
     carBooking: bookingSchema
+}, {
+    strict: false
 })
 
 carSchema.virtual('name').get(function () {

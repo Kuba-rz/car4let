@@ -21,25 +21,37 @@
                                         <%=cars[i].carModel%>
                                 </h5>
                                 <ul class="mt-3 text-center list-group list-group-flush">
-                                    <li class="list-group-item">Year: <%=cars[i].carYear%>
-                                    </li>
                                     <li class="list-group-item">Price: $<%=cars[i].carPrice%>
                                     </li>
-                                    <li class="list-group-item"><a href='/car/<%=cars[i].id%>'
-                                            class='btn btn-view-car'>View</a>
-                                    </li>
+                                    <% if(!cars[i].carBooking.booked){ %>
+                                        <li class="text-success list-group-item">Available
+                                        </li>
+                                        <% } else { %>
+                                            <li class="text-danger list-group-item">Unavailable
+                                            </li>
+                                            <% } %>
+                                                <li class="list-group-item"><a href='/car/<%=cars[i].id%>'
+                                                        class='btn btn-view-car'>View</a>
+                                                </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
+                <%=console.log(cars[i])%>
             </div>
             <% if(cars[i+1]){ %>
                 <div class="col-lg-6">
                     <div class="card mb-3">
                         <div class="row g-0">
                             <div class="col-lg-6">
-                                <img src="<%=cars[i+1].carImages[0].url%>" class="view-all-img img-fluid rounded-start">
+                                <% if(cars[i+1].carImages[0]) {%>
+                                    <img src="<%=cars[i+1].carImages[0].url%>"
+                                        class="view-all-img img-fluid rounded-start">
+                                    <% } else { %>
+                                        <img src="https://res.cloudinary.com/duh1ufu4r/image/upload/v1639152634/car4let/16068135545fc607723e5a9_ikxrw7.jpg"
+                                            class="view-all-img img-fluid rounded-start">
+                                        <% } %>
                             </div>
                             <div class="col-lg-6">
                                 <div class="card-body">
@@ -48,13 +60,18 @@
                                             <%=cars[i+1].carModel%>
                                     </h5>
                                     <ul class="mt-3 text-center list-group list-group-flush">
-                                        <li class="list-group-item">Year: <%=cars[i+1].carYear%>
-                                        </li>
                                         <li class="list-group-item">Price: $<%=cars[i+1].carPrice%>
                                         </li>
-                                        <li class="list-group-item"><a href='/car/<%=cars[i+1].id%>'
-                                                class='btn btn-view-car'>View</a>
-                                        </li>
+                                        <% if(!cars[i+1].carBooking.booked){ %>
+                                            <li class="text-success list-group-item">Available
+                                            </li>
+                                            <% } else { %>
+                                                <li class="text-danger list-group-item">Unavailable
+                                                </li>
+                                                <% } %>
+                                                    <li class="list-group-item"><a href='/car/<%=cars[i+1].id%>'
+                                                            class='btn btn-view-car'>View</a>
+                                                    </li>
                                     </ul>
                                 </div>
                             </div>

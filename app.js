@@ -15,6 +15,7 @@ const upload = multer({ storage: storage })
 const carModel = require('./models/carModel')
 const userModel = require('./models/userModel')
 const reviewModel = require('./models/reviewModel')
+const bookingModel = require('./models/bookingModel')
 
 const expressError = require('./helpers/expressError')
 
@@ -118,7 +119,7 @@ app.get('/car/new', isAdmin, (req, res) => {
 
 app.get('/car/viewAll', catchAsync(async (req, res) => {
     res.locals.title = 'All cars'
-    const cars = await carModel.find({})
+    const cars = await carModel.find({}).populate('carBooking')
     res.render('cars/viewAll', { cars })
 }))
 
@@ -147,11 +148,28 @@ app.get('/car/:carId/edit', isAdmin, catchAsync(async (req, res) => {
     res.render('cars/edit', { car, makes })
 }))
 
+
+
+//Booking routes
 app.get('/car/:carId/book', isLoggedIn, catchAsync(async (req, res) => {
     res.locals.title = 'Book car'
     const car = await carModel.findById(req.params.carId)
     res.render('cars/book', { car })
 }))
+
+app.post('/car/:carId/book', isLoggedIn, catchAsync(async (req, res) => {
+    const { bookedFrom, bookedUntil } = req.body
+    const car = await carModel.findById(req.params.carId)
+    const user = await userModel.findById(req.session.currentUser._id)
+    const carBooking = { booked: true, bookedBy: user, bookedFrom, bookedUntil }
+    car.carBooking = carBooking
+    await car.save()
+    const newBooking = new bookingModel({ bookedBy: user, bookedCar: car, bookedFrom, bookedUntil })
+    await newBooking.save()
+    req.flash('success', 'Car has been booked succesfully')
+    res.redirect(`/car/${car._id}`)
+}))
+
 
 //Update car
 app.put('/car/:carId/edit', isAdmin, upload.array('carImages'), catchAsync(async (req, res) => {
@@ -284,9 +302,7 @@ app.post('/car/:carId/review', isLoggedIn, catchAsync(async (req, res) => {
     const carId = req.params.carId
     const car = await carModel.findById(carId)
     const user = await userModel.findById(req.session.currentUser._id)
-    console.log(user)
     const review = new reviewModel({ reviewRating, reviewComment, reviewOwner: user })
-    console.log(review)
     car.carReviews.push(review)
     await car.save()
     await review.save()
