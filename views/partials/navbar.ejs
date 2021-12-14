@@ -28,6 +28,15 @@
                         <a class="white nav-link active" href="/car/new">Add a car</a>
                     </li>
                     <% } %>
+                        <% if (currentUser && currentUser.admin) { %>
+                            <li class="nav-item">
+                                <a class="white nav-link active" href="/book/viewAll">View all bookings</a>
+                            </li>
+                            <% } else { %>
+                                <li class="nav-item">
+                                    <a class="white nav-link active" href="/car/new">View my bookings</a>
+                                </li>
+                                <% } %>
             </ul>
             <div class="navbar-nav ms-auto">
                 <% if (!currentUser){ %>

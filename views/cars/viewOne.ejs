@@ -57,7 +57,7 @@
                             </div>
                             <div class="card-body">
                                 <% if(!car.carBooking.booked){ %>
-                                    <a href="/car/<%=car.id%>/book" class="btn btn-book-car card-link">Book</a>
+                                    <a href="/book/<%=car.id%>" class="btn btn-book-car card-link">Book</a>
                                     <% } else { %>
                                         <span class='text-danger'>Currently booked</span>
                                         <% } %>

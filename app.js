@@ -152,28 +152,6 @@ app.get('/car/:carId/edit', isAdmin, catchAsync(async (req, res) => {
 }))
 
 
-
-//Booking routes
-app.get('/car/:carId/book', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
-    res.locals.title = 'Book car'
-    const car = await carModel.findById(req.params.carId)
-    res.render('cars/book', { car })
-}))
-
-app.post('/car/:carId/book', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
-    const { bookedFrom, bookedUntil } = req.body
-    const car = await carModel.findById(req.params.carId)
-    const user = await userModel.findById(req.session.currentUser._id)
-    const carBooking = { booked: true, bookedBy: user, bookedFrom, bookedUntil }
-    car.carBooking = carBooking
-    await car.save()
-    const newBooking = new bookingModel({ bookedBy: user, bookedCar: car, bookedFrom, bookedUntil })
-    await newBooking.save()
-    req.flash('success', 'Car has been booked succesfully')
-    res.redirect(`/car/${car._id}`)
-}))
-
-
 //Update car
 app.put('/car/:carId/edit', isAdmin, upload.array('carImages'), catchAsync(async (req, res) => {
     const { carMake, carYear, carPrice, carDescription, deleteImages } = req.body
@@ -227,6 +205,38 @@ app.post('/car/new', isAdmin, upload.array('carImages'), carValidate, catchAsync
     req.flash('success', 'Car succesfully added')
     res.redirect(`/car/${car.id}`)
 }))
+
+
+
+
+
+
+//Booking routes
+app.get('/book/viewAll', isAdmin, catchAsync(async (req, res) => {
+    res.locals.title = 'All bookings'
+    const bookings = await bookingModel.find({}).populate('bookedBy').populate('bookedCar')
+    res.send(bookings)
+}))
+
+app.get('/book/:carId', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
+    res.locals.title = 'Book car'
+    const car = await carModel.findById(req.params.carId)
+    res.render('bookings/book', { car })
+}))
+
+app.post('/book/:carId', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
+    const { bookedFrom, bookedUntil } = req.body
+    const car = await carModel.findById(req.params.carId)
+    const user = await userModel.findById(req.session.currentUser._id)
+    const carBooking = { booked: true, bookedBy: user, bookedFrom, bookedUntil }
+    car.carBooking = carBooking
+    await car.save()
+    const newBooking = new bookingModel({ bookedBy: user, bookedCar: car, bookedFrom, bookedUntil })
+    await newBooking.save()
+    req.flash('success', 'Car has been booked succesfully')
+    res.redirect(`/car/${car._id}`)
+}))
+
 
 
 
