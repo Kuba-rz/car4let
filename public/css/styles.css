@@ -76,3 +76,14 @@ button[type='submit']:hover {
 #main-nav {
     position: sticky;
 }
+
+.btn-cancel-booking {
+    background-color:#f3722c;
+    color: white;
+    width:120px;
+}
+
+.btn-cancel-booking:hover {
+    background-color:#f94144;
+    color: white;
+}

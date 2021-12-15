@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const dateTime = require('date-and-time')
 
 const Schema = mongoose.Schema;
 
@@ -14,11 +15,24 @@ const bookingSchema = new Schema({
         required: true
     },
     bookedFrom: {
-        type: Date
+        type: String
     },
     bookedUntil: {
-        type: Date
+        type: String
     }
+})
+
+bookingSchema.virtual('daysBooked').get(function () {
+    const newFrom = this.bookedFrom.replace(/-/g, '/')
+    const newUntil = this.bookedUntil.replace(/-/g, '/')
+    const parsedFrom = dateTime.parse(newFrom, 'YYYY/MM/DD')
+    const parsedUntil = dateTime.parse(newUntil, 'YYYY/MM/DD')
+    console.log(parsedFrom)
+    console.log(typeof parsedFrom)
+    console.log(newUntil)
+    console.log(typeof parsedUntil)
+    const daysBooked = dateTime.subtract(parsedUntil, parsedFrom).toDays();
+    return daysBooked
 })
 
 const Bookings = mongoose.model('Booking', bookingSchema)

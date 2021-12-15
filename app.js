@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const session = require('express-session')
 const flash = require('connect-flash')
 const bcrypt = require('bcrypt')
+const dateTime = require('date-and-time')
 
 const { cloudinary, storage } = require('./cloudinary/index')
 const multer = require('multer')
@@ -212,10 +213,10 @@ app.post('/car/new', isAdmin, upload.array('carImages'), carValidate, catchAsync
 
 
 //Booking routes
-app.get('/book/viewAll', isAdmin, catchAsync(async (req, res) => {
+app.get('/book/viewAll', catchAsync(async (req, res) => {
     res.locals.title = 'All bookings'
     const bookings = await bookingModel.find({}).populate('bookedBy').populate('bookedCar')
-    res.send(bookings)
+    res.render('bookings/viewAll', { bookings })
 }))
 
 app.get('/book/:carId', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
