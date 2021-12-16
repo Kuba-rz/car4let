@@ -21,7 +21,7 @@ const bookingModel = require('./models/bookingModel')
 const expressError = require('./helpers/expressError')
 
 const carValidate = require('./helpers/carValidate')
-const { catchAsync, isLoggedIn, isReviewOwnerOrAdmin, carNotBooked, isAdmin, checkRegister } = require('./helpers/functions')
+const { catchAsync, isLoggedIn, isReviewOwnerOrAdmin, validDates, carNotBooked, isAdmin, checkRegister } = require('./helpers/functions')
 
 
 
@@ -213,7 +213,7 @@ app.post('/car/new', isAdmin, upload.array('carImages'), carValidate, catchAsync
 
 
 //Booking routes
-app.get('/book/viewAll', catchAsync(async (req, res) => {
+app.get('/book/viewAll', isAdmin, catchAsync(async (req, res) => {
     res.locals.title = 'All bookings'
     const bookings = await bookingModel.find({}).populate('bookedBy').populate('bookedCar')
     res.render('bookings/viewAll', { bookings })
@@ -225,7 +225,7 @@ app.get('/book/:carId', isLoggedIn, carNotBooked, catchAsync(async (req, res) =>
     res.render('bookings/book', { car })
 }))
 
-app.post('/book/:carId', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
+app.post('/book/:carId', isLoggedIn, validDates, carNotBooked, catchAsync(async (req, res) => {
     const { bookedFrom, bookedUntil } = req.body
     const car = await carModel.findById(req.params.carId)
     const user = await userModel.findById(req.session.currentUser._id)
@@ -236,6 +236,16 @@ app.post('/book/:carId', isLoggedIn, carNotBooked, catchAsync(async (req, res) =
     await newBooking.save()
     req.flash('success', 'Car has been booked succesfully')
     res.redirect(`/car/${car._id}`)
+}))
+
+app.delete('/book/:carId/:bookingId', isAdmin, catchAsync(async (req, res) => {
+    const { carId, bookingId } = req.params
+    const car = await carModel.findById(carId)
+    const booking = await bookingModel.findByIdAndDelete(bookingId)
+    car.carBooking = { booked: false }
+    await car.save()
+    req.flash('success', 'Booking ended succesfully')
+    res.redirect('/book/viewAll')
 }))
 
 

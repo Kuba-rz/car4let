@@ -63,6 +63,24 @@ async function carNotBooked(req, res, next) {
     return res.redirect(`/car/${car._id}`)
 }
 
+function validDates(req, res, next) {
+    const { bookedFrom, bookedUntil } = req.body
+    const bookedFromDate = new Date(bookedFrom); //dd-mm-YYYY
+    const bookedUntilDate = new Date(bookedUntil)
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (bookedFromDate < today) {
+        req.flash('error', 'Please select a date which is in the future')
+        return res.redirect(`/book/${req.params.carId}`)
+    }
+    if (bookedUntilDate <= bookedFromDate) {
+        req.flash('error', 'Please select a return date which is not prior to the booking date')
+        return res.redirect(`/book/${req.params.carId}`)
+    }
+    return next()
+}
+
 
 
 
@@ -71,6 +89,7 @@ module.exports = {
     catchAsync,
     isLoggedIn,
     isReviewOwnerOrAdmin,
+    validDates,
     carNotBooked,
     isAdmin,
     checkRegister
