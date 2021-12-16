@@ -219,11 +219,19 @@ app.get('/book/viewAll', isAdmin, catchAsync(async (req, res) => {
     res.render('bookings/viewAll', { bookings })
 }))
 
+app.get('/book/viewMy', isLoggedIn, catchAsync(async (req, res) => {
+    res.locals.title = 'My bookings'
+    console.log(req.session.currentUser)
+    const bookings = await bookingModel.find({ bookedBy: { _id: req.session.currentUser._id } }).populate('bookedCar')
+    res.render('bookings/viewMy', { bookings })
+}))
+
 app.get('/book/:carId', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
     res.locals.title = 'Book car'
     const car = await carModel.findById(req.params.carId)
     res.render('bookings/book', { car })
 }))
+
 
 app.post('/book/:carId', isLoggedIn, validDates, carNotBooked, catchAsync(async (req, res) => {
     const { bookedFrom, bookedUntil } = req.body

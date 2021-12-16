@@ -2,7 +2,7 @@
 
     <div class="row justify-content-center">
         <div class="col">
-            <h1 class="text-center display-3 mb-5">All bookings</h1>
+            <h1 class="text-center display-3 mb-5">My bookings</h1>
         </div>
     </div>
     <% if(bookings.length){ %>
@@ -19,25 +19,19 @@
                         <%=booking.bookedFrom%> - <%=booking.bookedUntil%>
                     </span>
                 </div>
-                <div class="col-lg-2 mb-3">
-                    <b class='fs-5 me-2'>Booked by:</b>
-                    <span class='fs-6'>
-                        <%=booking.bookedBy.username%>
-                    </span>
-                </div>
                 <div class="col-lg-2"><b class="text-decoration-underline fs-5">Price due: $
                         <%=booking.daysBooked*booking.bookedCar.carPrice%>
                     </b>
-                </div>
-                <div class="col-lg-2">
-                    <form action="/book/<%=booking.bookedCar.id%>/<%=booking.id%>?_method=DELETE" method='POST'>
-                        <button class="btn mb-3 mt-lg-0 mt-3 btn-cancel-booking">End booking</button>
-                    </form>
                 </div>
                 <br>
                 <hr>
             </div>
             <% } %>
+                <div class="row">
+                    <h1 class="text-center fixed-bottom fs-6">In order to end a booking, please <a
+                            href='/contact'>contact us</a>
+                    </h1>
+                </div>
                 <% } else { %>
                     <h1 class="fs-4">No bookings have been made...</h1>
                     <% } %>
