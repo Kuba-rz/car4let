@@ -69,6 +69,7 @@ carSchema.virtual('name').get(function () {
     return `${this.carMake} ${this.carModel}`
 })
 
+
 const Cars = mongoose.model('Car', carSchema)
 
 module.exports = Cars

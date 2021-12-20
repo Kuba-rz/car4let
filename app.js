@@ -24,6 +24,9 @@ const carValidate = require('./helpers/carValidate')
 const { catchAsync, isLoggedIn, isReviewOwnerOrAdmin, validDates, carNotBooked, isAdmin, checkRegister } = require('./helpers/functions')
 
 
+const carRoutes = require('./routes/carRoutes')
+const bookRoutes = require('./routes/bookRoutes')
+
 
 
 
@@ -107,154 +110,20 @@ app.get('/', (req, res) => {
     res.render('cars/homepage')
 })
 
+app.use('/car', carRoutes)
 
-
-
-
-//Car routes
-app.get('/car/new', isAdmin, (req, res) => {
-    const makes = require('./helpers/carMakes')
-    res.locals.title = 'Add a new car'
-    res.render('cars/new', { makes })
-})
-
-app.get('/car/viewAll', catchAsync(async (req, res) => {
-    res.locals.title = 'All cars'
-    const cars = await carModel.find({}).populate({
-        path: 'carBooking',
-        populate: { path: 'bookedBy' }
-    })
-    res.render('cars/viewAll', { cars })
-}))
-
-app.get('/car/:carId', catchAsync(async (req, res) => {
-    try {
-        //If id does not exist in the database, redirect the user with a flash message
-        const car = await carModel.findById(req.params.carId).populate({
-            path: 'carReviews',
-            populate: {
-                path: 'reviewOwner'
-            }
-        })
-        res.locals.title = `${car.carMake} ${car.carModel}`
-        res.render('cars/viewOne', { car })
-    }
-    catch {
-        throw new expressError('Cannot find the specified car', 404)
-    }
-}))
-
-//Render edit form and populate the fields
-app.get('/car/:carId/edit', isAdmin, catchAsync(async (req, res) => {
-    const car = await carModel.findById(req.params.carId)
-    const makes = require('./helpers/carMakes')
-    res.locals.title = `Edit`
-    res.render('cars/edit', { car, makes })
-}))
-
-
-//Update car
-app.put('/car/:carId/edit', isAdmin, upload.array('carImages'), catchAsync(async (req, res) => {
-    const { carMake, carYear, carPrice, carDescription, deleteImages } = req.body
-    const model = req.body.carModel
-    //Update the fields in the DB
-    const car = await carModel.findByIdAndUpdate(req.params.carId, { carMake, carModel: model, carYear, carPrice, carDescription })
-    //Create an array for the uploaded images
-    const imgs = req.files.map(item => {
-        const container = {};
-        container.url = item.path;
-        container.filename = item.filename;
-        return container;
-    })
-    car.carImages.push(...imgs)
-    //If user has selected images to delete, for each one delete it from cloudinary and then from DB
-    if (deleteImages && deleteImages.length > 0) {
-        for (let filename of req.body.deleteImages) {
-            cloudinary.uploader.destroy(filename)
-        }
-        await car.updateOne({ $pull: { carImages: { filename: { $in: deleteImages } } } })
-    }
-    await car.save()
-    req.flash('success', 'Car succesfully updated')
-    res.redirect(`/car/${car.id}`)
-}))
-
-app.delete('/car/:carId', isAdmin, catchAsync(async (req, res) => {
-    const id = req.params.carId
-    const car = await carModel.findById(id)
-    if (car.carImages.length) {
-        for (let img of car.carImages) {
-            cloudinary.uploader.destroy(img.filename)
-        }
-    }
-    await carModel.findByIdAndDelete(id)
-    req.flash('success', 'Car succesfully deleted')
-    res.redirect('/car/viewAll')
-}))
-
-app.post('/car/new', isAdmin, upload.array('carImages'), carValidate, catchAsync(async (req, res) => {
-    const car = new carModel(req.body)
-    //Loop over the uploaded images and create a new array of objects, containing the url and pathname to store in the DB
-    car.carImages = req.files.map(item => {
-        const container = {};
-        container.url = item.path;
-        container.filename = item.filename;
-        return container;
-    })
-    car.carBooking = { booked: false }
-    await car.save()
-    req.flash('success', 'Car succesfully added')
-    res.redirect(`/car/${car.id}`)
-}))
+app.use('/book', bookRoutes)
 
 
 
 
 
 
-//Booking routes
-app.get('/book/viewAll', isAdmin, catchAsync(async (req, res) => {
-    res.locals.title = 'All bookings'
-    const bookings = await bookingModel.find({}).populate('bookedBy').populate('bookedCar')
-    res.render('bookings/viewAll', { bookings })
-}))
-
-app.get('/book/viewMy', isLoggedIn, catchAsync(async (req, res) => {
-    res.locals.title = 'My bookings'
-    console.log(req.session.currentUser)
-    const bookings = await bookingModel.find({ bookedBy: { _id: req.session.currentUser._id } }).populate('bookedCar')
-    res.render('bookings/viewMy', { bookings })
-}))
-
-app.get('/book/:carId', isLoggedIn, carNotBooked, catchAsync(async (req, res) => {
-    res.locals.title = 'Book car'
-    const car = await carModel.findById(req.params.carId)
-    res.render('bookings/book', { car })
-}))
 
 
-app.post('/book/:carId', isLoggedIn, validDates, carNotBooked, catchAsync(async (req, res) => {
-    const { bookedFrom, bookedUntil } = req.body
-    const car = await carModel.findById(req.params.carId)
-    const user = await userModel.findById(req.session.currentUser._id)
-    const carBooking = { booked: true, bookedBy: user, bookedFrom, bookedUntil }
-    car.carBooking = carBooking
-    await car.save()
-    const newBooking = new bookingModel({ bookedBy: user, bookedCar: car, bookedFrom, bookedUntil })
-    await newBooking.save()
-    req.flash('success', 'Car has been booked succesfully')
-    res.redirect(`/car/${car._id}`)
-}))
 
-app.delete('/book/:carId/:bookingId', isAdmin, catchAsync(async (req, res) => {
-    const { carId, bookingId } = req.params
-    const car = await carModel.findById(carId)
-    const booking = await bookingModel.findByIdAndDelete(bookingId)
-    car.carBooking = { booked: false }
-    await car.save()
-    req.flash('success', 'Booking ended succesfully')
-    res.redirect('/book/viewAll')
-}))
+
+
 
 
 
