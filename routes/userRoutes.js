@@ -1,7 +1,12 @@
 const express = require('express')
 const router = express.Router()
+require('dotenv').config()
 
 const bcrypt = require('bcrypt')
+const { v4: uuidv4 } = require('uuid');
+const sendEmail = require('../helpers/nodemailer')
+
+const expressError = require('../helpers/expressError')
 
 const userModel = require('../models/userModel')
 
@@ -25,7 +30,7 @@ router.post('/register', checkRegister, catchAsync(async (req, res) => {
         });
     })
 
-    const user = new userModel({ email: userEmail, username: userUsername, hash: hashedPassword, admin: false })
+    const user = new userModel({ email: userEmail, username: userUsername, hash: hashedPassword, admin: false, passwordRequest: false })
     await user.save()
     req.session.currentUser = user
     req.flash('success', 'Account succesfully created')
@@ -69,19 +74,39 @@ router.get('/logout', isLoggedIn, (req, res) => {
     res.redirect('/')
 })
 
-router.get('/reset', (req, res) => {
+router.get('/forgot', (req, res) => {
     res.locals.title = 'Reset your password'
     res.render('users/reset')
 })
 
-router.post('/reset', catchAsync(async (req, res) => {
+router.post('/forgot', catchAsync(async (req, res) => {
     const { userEmail } = req.body
-    const user = await userModel.find({ email: userEmail })
+    let user = await userModel.find({ email: userEmail })
+    console.log(user)
     if (user.length) {
-        return res.send('yah')
+        const uuid = uuidv4()
+        user[0].passwordRequest = uuid
+        await user[0].save()
+        sendEmail(userEmail, uuid)
+        return res.send('Email has been sent, please check your spam inbox')
     }
-    return res.send('nah')
+    req.flash('error', 'An account associated with that email address, could not be found')
+    return res.redirect('/user/forgot')
+}))
 
+router.get('/reset/:uuid', catchAsync(async (req, res) => {
+    const { uuid } = req.params
+    const user = await userModel.find({ passwordRequest: uuid })
+    if (user.length) {
+        res.locals.title = 'Reset your password'
+        return res.render('users/changePassword', { uuid })
+    }
+    throw new expressError('The link you are trying to access is depreciated', 404)
+}))
+
+router.post('/reset/:uuid', catchAsync(async (req, res) => {
+    //NEXT STEP TAKE PASSWORD AND RESET IT
+    res.send('NEXT')
 }))
 
 module.exports = router

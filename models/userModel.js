@@ -22,7 +22,8 @@ const userSchema = new Schema({
         required: true
     },
     passwordRequest: {
-        type: String
+        type: String,
+        required: true
     }
 })
 
