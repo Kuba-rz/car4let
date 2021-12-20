@@ -6,23 +6,8 @@ const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const flash = require('connect-flash')
-const bcrypt = require('bcrypt')
-const dateTime = require('date-and-time')
-
-const { cloudinary, storage } = require('./cloudinary/index')
-const multer = require('multer')
-const upload = multer({ storage: storage })
-
-const carModel = require('./models/carModel')
-const userModel = require('./models/userModel')
-const reviewModel = require('./models/reviewModel')
-const bookingModel = require('./models/bookingModel')
 
 const expressError = require('./helpers/expressError')
-
-const carValidate = require('./helpers/carValidate')
-const { catchAsync, isLoggedIn, isReviewOwnerOrAdmin, validDates, carNotBooked, isAdmin, checkRegister } = require('./helpers/functions')
-
 
 const carRoutes = require('./routes/carRoutes')
 const bookRoutes = require('./routes/bookRoutes')
@@ -89,7 +74,6 @@ app.use(flash())
 app.listen(3000, () => {
     console.log('Listening')
 })
-
 
 
 

@@ -1,0 +1,28 @@
+<% layout ('partials/boilerplate.ejs') %>
+
+    <div class="mb-3 row d-flex justify-content-center">
+        <div class="col-6 col-lg-3">
+            <img id='car-add-img'
+                src="https://res.cloudinary.com/duh1ufu4r/image/upload/c_scale,w_180/v1640026524/car4let/My_project_2_mjowat.png"
+                alt="">
+        </div>
+    </div>
+
+
+    <form action='/user/reset' method='POST' novalidate class='needs-validation'>
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-8">
+                <div class="mb-3">
+                    <label for="userEmail" class="form-label">Email</label>
+                    <input required type="email" name='userEmail' class="form-control" id="userEmail">
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center">
+                <button type="submit" class="mb-3 btn">Submit</button>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <a href='/user/login' class="text-center mb-3">Back</a>
+            </div>
+
+    </form>

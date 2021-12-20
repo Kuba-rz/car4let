@@ -7,7 +7,6 @@ const bookModel = require('../models/bookingModel')
 
 require('dotenv').config()
 
-const mongoose = require('mongoose')
 const { cloudinary, storage } = require('../cloudinary/index')
 const multer = require('multer')
 const upload = multer({ storage: storage })
@@ -15,9 +14,6 @@ const upload = multer({ storage: storage })
 const expressError = require('../helpers/expressError')
 
 const carValidate = require('../helpers/carValidate')
-
-
-
 
 
 

@@ -69,4 +69,19 @@ router.get('/logout', isLoggedIn, (req, res) => {
     res.redirect('/')
 })
 
+router.get('/reset', (req, res) => {
+    res.locals.title = 'Reset your password'
+    res.render('users/reset')
+})
+
+router.post('/reset', catchAsync(async (req, res) => {
+    const { userEmail } = req.body
+    const user = await userModel.find({ email: userEmail })
+    if (user.length) {
+        return res.send('yah')
+    }
+    return res.send('nah')
+
+}))
+
 module.exports = router
