@@ -10,7 +10,7 @@ const expressError = require('../helpers/expressError')
 
 const userModel = require('../models/userModel')
 
-const { catchAsync, isLoggedIn, checkRegister } = require('../helpers/functions')
+const { catchAsync, checkResetPassword, isLoggedIn, checkRegister } = require('../helpers/functions')
 
 
 
@@ -104,9 +104,22 @@ router.get('/reset/:uuid', catchAsync(async (req, res) => {
     throw new expressError('The link you are trying to access is depreciated', 404)
 }))
 
-router.post('/reset/:uuid', catchAsync(async (req, res) => {
+router.post('/reset/:uuid', checkResetPassword, catchAsync(async (req, res) => {
     //NEXT STEP TAKE PASSWORD AND RESET IT
-    res.send('NEXT')
+    const { uuid } = req.params
+    const { userPassword } = req.body
+    const hashedPassword = await new Promise((resolve, reject) => {
+        bcrypt.hash(userPassword, 10, function (err, hash) {
+            if (err) reject(err)
+            resolve(hash)
+        });
+    })
+    const user = await userModel.find({ passwordRequest: uuid })
+    user[0].hash = hashedPassword
+    user[0].passwordRequest = false
+    await user[0].save()
+    req.flash('success', 'Password has been changed succesfully')
+    res.redirect('/user/login')
 }))
 
 module.exports = router

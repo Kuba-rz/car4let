@@ -20,8 +20,19 @@ function checkRegister(req, res, next) {
         return res.redirect('/user/register')
     }
     if (!regularExpression.test(userPassword)) {
-        req.flash('error', 'Passwrd must contain at least one special character, one number and be at least 6 characters long')
+        req.flash('error', 'Password must contain at least one special character, one number and be at least 6 characters long')
         return res.redirect('/user/register')
+    }
+    next()
+}
+
+function checkResetPassword(req, res, next) {
+    const { userPassword } = req.body
+    const regularExpression = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+    const { uuid } = req.params
+    if (userPassword.length < 6 || !regularExpression.test(userPassword)) {
+        req.flash('error', 'New password must contain at least one special character, one number and be at least 6 characters long')
+        return res.redirect(`/user/reset/${uuid}`)
     }
     next()
 }
@@ -90,6 +101,7 @@ module.exports = {
     isLoggedIn,
     isReviewOwnerOrAdmin,
     validDates,
+    checkResetPassword,
     carNotBooked,
     isAdmin,
     checkRegister

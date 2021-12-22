@@ -1,82 +1,108 @@
 <% layout ('partials/boilerplate.ejs') %>
 
     <h1 class="text-center display-3">All cars</h1>
+    <div class="row mb-3">
+        <div class="col-lg-3 col-6">
+            <label for="carMake" class="form-label">Filter by make:</label>
+            <select onchange="location = this.value;" id='carMake' class="form-select" name='carMake' required
+                aria-label="Default select example required">
+                <option value="" disabled selected>Choose car make</option>
+                <option value='/car/viewAll'>View all cars</option>
+                <% for(let make of makes) { %>
+                    <option value="/car/viewAll?make=<%=make%>">
+                        <%=make%>
+                    </option>
+                    <% } %>
+            </select>
+        </div>
+    </div>
     <div class="mt-3 row d-flex justify-content-between">
-        <% for(let i=0; i<cars.length; i+=2) { %>
-            <div class="col-lg-6">
-                <div class="card mb-3">
-                    <div class="row g-0">
-                        <div class="col-lg-6">
-                            <% if(cars[i].carImages[0]) {%>
-                                <img src="<%=cars[i].carImages[0].url%>" class="view-all-img img-fluid rounded-start">
-                                <% } else { %>
-                                    <img src="https://res.cloudinary.com/duh1ufu4r/image/upload/v1639152634/car4let/16068135545fc607723e5a9_ikxrw7.jpg"
-                                        class="view-all-img img-fluid rounded-start">
-                                    <% } %>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">
-                                    <%=cars[i].carMake%>
-                                        <%=cars[i].carModel%>
-                                </h5>
-                                <ul class="mt-3 text-center list-group list-group-flush">
-                                    <li class="list-group-item">Price: $<%=cars[i].carPrice%>
-                                    </li>
-                                    <% if(!cars[i].carBooking.booked){ %>
-                                        <li class="text-success list-group-item">Available
-                                        </li>
-                                        <% } else { %>
-                                            <li class="text-danger list-group-item">Unavailable
-                                            </li>
-                                            <% } %>
-                                                <li class="list-group-item"><a href='/car/<%=cars[i].id%>'
-                                                        class='btn btn-view-car'>View</a>
-                                                </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <% if(!cars.length){ %>
+            <h1 class="text-center fs-4">No cars with that criteria could be found...</h1>
+            <div class="mb-5 row fixed-bottom justify-content-center">
+                <img style='max-width:270px;'
+                    src="https://res.cloudinary.com/duh1ufu4r/image/upload/c_scale,w_180/v1640199140/car4let/My_project_3_rnfz0g.png"
+                    alt="">
+
             </div>
-            <% if(cars[i+1]){ %>
-                <div class="col-lg-6">
-                    <div class="card mb-3">
-                        <div class="row g-0">
-                            <div class="col-lg-6">
-                                <% if(cars[i+1].carImages[0]) {%>
-                                    <img src="<%=cars[i+1].carImages[0].url%>"
-                                        class="view-all-img img-fluid rounded-start">
-                                    <% } else { %>
-                                        <img src="https://res.cloudinary.com/duh1ufu4r/image/upload/v1639152634/car4let/16068135545fc607723e5a9_ikxrw7.jpg"
+            <% } else{ %>
+                <% for(let i=0; i<cars.length; i+=2) { %>
+                    <div class="col-lg-6">
+                        <div class="card mb-3">
+                            <div class="row g-0">
+                                <div class="col-lg-6">
+                                    <% if(cars[i].carImages[0]) {%>
+                                        <img src="<%=cars[i].carImages[0].url%>"
                                             class="view-all-img img-fluid rounded-start">
-                                        <% } %>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="card-body">
-                                    <h5 class="card-title text-center">
-                                        <%=cars[i+1].carMake%>
-                                            <%=cars[i+1].carModel%>
-                                    </h5>
-                                    <ul class="mt-3 text-center list-group list-group-flush">
-                                        <li class="list-group-item">Price: $<%=cars[i+1].carPrice%>
-                                        </li>
-                                        <% if(!cars[i+1].carBooking.booked){ %>
-                                            <li class="text-success list-group-item">Available
+                                        <% } else { %>
+                                            <img src="https://res.cloudinary.com/duh1ufu4r/image/upload/v1639152634/car4let/16068135545fc607723e5a9_ikxrw7.jpg"
+                                                class="view-all-img img-fluid rounded-start">
+                                            <% } %>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-center">
+                                            <%=cars[i].carMake%>
+                                                <%=cars[i].carModel%>
+                                        </h5>
+                                        <ul class="mt-3 text-center list-group list-group-flush">
+                                            <li class="list-group-item">Price: $<%=cars[i].carPrice%>
                                             </li>
-                                            <% } else { %>
-                                                <li class="text-danger list-group-item">Unavailable
+                                            <% if(!cars[i].carBooking.booked){ %>
+                                                <li class="text-success list-group-item">Available
                                                 </li>
-                                                <% } %>
-                                                    <li class="list-group-item"><a href='/car/<%=cars[i+1].id%>'
-                                                            class='btn btn-view-car'>View</a>
+                                                <% } else { %>
+                                                    <li class="text-danger list-group-item">Unavailable
                                                     </li>
-                                    </ul>
+                                                    <% } %>
+                                                        <li class="list-group-item"><a href='/car/<%=cars[i].id%>'
+                                                                class='btn btn-view-car'>View</a>
+                                                        </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <% } %>
-                    <% } %>
+                    <% if(cars[i+1]){ %>
+                        <div class="col-lg-6">
+                            <div class="card mb-3">
+                                <div class="row g-0">
+                                    <div class="col-lg-6">
+                                        <% if(cars[i+1].carImages[0]) {%>
+                                            <img src="<%=cars[i+1].carImages[0].url%>"
+                                                class="view-all-img img-fluid rounded-start">
+                                            <% } else { %>
+                                                <img src="https://res.cloudinary.com/duh1ufu4r/image/upload/v1639152634/car4let/16068135545fc607723e5a9_ikxrw7.jpg"
+                                                    class="view-all-img img-fluid rounded-start">
+                                                <% } %>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-center">
+                                                <%=cars[i+1].carMake%>
+                                                    <%=cars[i+1].carModel%>
+                                            </h5>
+                                            <ul class="mt-3 text-center list-group list-group-flush">
+                                                <li class="list-group-item">Price: $<%=cars[i+1].carPrice%>
+                                                </li>
+                                                <% if(!cars[i+1].carBooking.booked){ %>
+                                                    <li class="text-success list-group-item">Available
+                                                    </li>
+                                                    <% } else { %>
+                                                        <li class="text-danger list-group-item">Unavailable
+                                                        </li>
+                                                        <% } %>
+                                                            <li class="list-group-item"><a href='/car/<%=cars[i+1].id%>'
+                                                                    class='btn btn-view-car'>View</a>
+                                                            </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                            <% } %>
     </div>
+    <% } %>

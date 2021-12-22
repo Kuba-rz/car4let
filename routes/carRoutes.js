@@ -26,11 +26,20 @@ router.get('/new', isAdmin, (req, res) => {
 
 router.get('/viewAll', catchAsync(async (req, res) => {
     res.locals.title = 'All cars'
+    const makes = require('../helpers/carMakes')
+    if (req.query.make) {
+        const make = req.query.make
+        const cars = await carModel.find({ carMake: make }).populate({
+            path: 'carBooking',
+            populate: { path: 'bookedBy' }
+        })
+        return res.render('cars/viewAll', { cars, makes })
+    }
     const cars = await carModel.find({}).populate({
         path: 'carBooking',
         populate: { path: 'bookedBy' }
     })
-    res.render('cars/viewAll', { cars })
+    res.render('cars/viewAll', { cars, makes })
 }))
 
 router.get('/:carId', catchAsync(async (req, res) => {
