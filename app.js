@@ -94,6 +94,11 @@ app.get('/', (req, res) => {
     res.render('cars/homepage')
 })
 
+app.get('/contact', (req, res) => {
+    res.locals.title = 'Contact'
+    res.render('contact')
+})
+
 app.use('/car', carRoutes)
 
 app.use('/book', bookRoutes)
