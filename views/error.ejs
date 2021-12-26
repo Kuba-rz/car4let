@@ -1,5 +1,17 @@
 <% layout ('partials/boilerplate.ejs') %>
 
-    <%=message%>
-        <%=status%>
-            <%=stack%>
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">
+            <%=status%>
+        </h4>
+        <hr>
+        <p>
+            <%=message%>
+                <% if(fullUrl=='/' ){ %>
+                    <a id='error-btn' class='btn btn-secondary' href="<%=fullUrl%>">Home</a>
+                    <% } else { %>
+                        <a id='error-btn' class='btn btn-secondary' href="<%=fullUrl%>">Back</a>
+                        <% } %>
+        </p>
+
+    </div>

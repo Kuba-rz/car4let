@@ -13,7 +13,7 @@ const marker = new mapboxgl.Marker()
     .setPopup(
         new mapboxgl.Popup({ offset: 25 }) // add popups
             .setHTML(
-                '<h4>This is where you can find us</h4>'
+                '<h4>This is where we are located</h4>'
             )
     )
     .addTo(map)

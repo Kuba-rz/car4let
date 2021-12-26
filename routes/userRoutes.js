@@ -4,7 +4,8 @@ require('dotenv').config()
 
 const bcrypt = require('bcrypt')
 const { v4: uuidv4 } = require('uuid');
-const sendEmail = require('../helpers/nodemailer')
+const { sendEmailReset, sendEmailVerify } = require('../helpers/nodemailer')
+
 
 const expressError = require('../helpers/expressError')
 
@@ -87,7 +88,7 @@ router.post('/forgot', catchAsync(async (req, res) => {
         const uuid = uuidv4()
         user[0].passwordRequest = uuid
         await user[0].save()
-        sendEmail(userEmail, uuid)
+        sendEmailReset(userEmail, uuid)
         return res.send('Email has been sent, please check your spam inbox')
     }
     req.flash('error', 'An account associated with that email address, could not be found')

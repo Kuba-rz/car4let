@@ -120,6 +120,7 @@ app.use((err, req, res, next) => {
     //Error handler
     res.locals.title = 'Error'
     const { message = 'Something went wrong!', status = 500 } = err
-    const stack = err.stack
-    res.status(status).render('error', { message, status, stack })
+    const fullUrl = ((status != 404) ? req.protocol + '://' + req.get('host') + req.originalUrl : '/');
+
+    res.status(status).render('error', { message, status, fullUrl })
 })

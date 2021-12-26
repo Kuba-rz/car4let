@@ -1,5 +1,5 @@
 body {
-    font-family: 'Lato', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 #nav-logo {
@@ -7,7 +7,7 @@ body {
     height: auto;
 }
 
-.navbar {
+.navbar-main {
     background-color:#22223b;
     position: relative;
 }
@@ -86,4 +86,10 @@ button[type='submit']:hover {
 .btn-cancel-booking:hover {
     background-color:#f94144;
     color: white;
+}
+
+#error-btn {
+    position: absolute;
+    right:10px;
+    bottom:10px;
 }
