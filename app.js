@@ -5,6 +5,7 @@ const methodOverride = require('method-override')
 const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
+const mongoStore = require('connect-mongo')
 const flash = require('connect-flash')
 
 const expressError = require('./helpers/expressError')
@@ -57,7 +58,18 @@ app.use('/img', express.static(__dirname + '/images'));
 
 
 //Session options
+const store = mongoStore.create({
+    mongoUrl: DBUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret
+    }
+})
+
+
+
 const sess = {
+    store,
     secret: secret,
     resave: false,
     saveUninitialized: true,
