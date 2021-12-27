@@ -20,6 +20,7 @@ const reviewRoutes = require('./routes/reviewRoutes')
 
 
 //Database URL depending if we are in production
+//mongoAtlasURL=mongodb+srv://kuba-rz:KubaKlaudia098@car4letcluster.nesom.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 const DBUrl = process.env.mongoAtlasURL || 'mongodb://localhost:27017/car4let'
 const secret = process.env.SECRET || 'car4letsecret'
 
